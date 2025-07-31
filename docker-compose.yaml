@@ -1,0 +1,58 @@
+services:
+  # PHP-FPM Service for Laravel
+  app:
+    image: php:8.2-fpm
+    container_name: telenta_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+      - ./data/app/log:/var/www/storage/logs  # Mount host log folder to container's log folder
+    networks:
+      - telenta_net
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=telenta
+      - DB_USERNAME=udin
+      - DB_PASSWORD=udin
+      - REDIS_HOST=redis
+    depends_on:
+      - db
+      - redis
+
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: telenta_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: telenta
+      MYSQL_USER: udin
+      MYSQL_PASSWORD: udin
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - telenta_net
+
+  # Redis Cache
+  redis:
+    image: redis:alpine
+    container_name: telenta_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - telenta_net
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  telenta_net:
+    driver: bridge
