@@ -17,3 +17,7 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             whoami
+            cd /home/udin/fun/telenta-laravel
+            git pull
+            ./vendor/bin/sail npm run build
+            ./vendor/bin/sail php artisan migrate
