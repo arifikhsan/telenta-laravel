@@ -22,4 +22,5 @@ jobs:
             ./vendor/bin/sail npm install --no-save
             ./vendor/bin/sail npm run build
             ./vendor/bin/sail php artisan migrate
+            ./vendor/bin/sail php artisan db:seed
             docker restart telenta-web
