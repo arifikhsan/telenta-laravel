@@ -21,3 +21,4 @@ jobs:
             git pull
             ./vendor/bin/sail npm run build
             ./vendor/bin/sail php artisan migrate
+            docker restart telenta-web
