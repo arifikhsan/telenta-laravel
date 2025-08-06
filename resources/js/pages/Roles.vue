@@ -3,7 +3,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Role } from '@/types/role';
+import { Role } from '@/types/entity/role';
+import dayjs from 'dayjs';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -11,6 +12,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/roles',
     },
 ];
+
+const formatDate =(date: string): string => {
+    return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
+}
 
 defineProps({
     roles: {
@@ -32,8 +37,14 @@ defineProps({
                         <TableHead class="w-[100px]">
                             Id
                         </TableHead>
-                        <TableHead class="w-[100px]">
+                        <TableHead>
                             Name
+                        </TableHead>
+                        <TableHead>
+                            Created At
+                        </TableHead>
+                        <TableHead>
+                            Updated At
                         </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -45,6 +56,12 @@ defineProps({
                         </TableCell>
                         <TableCell class="font-medium">
                             {{ role.name }} <!-- Display the role name -->
+                        </TableCell>
+                        <TableCell>
+                            {{ formatDate(role.created_at) }}
+                        </TableCell>
+                        <TableCell>
+                            {{ formatDate(role.updated_at) }}
                         </TableCell>
                     </TableRow>
                 </TableBody>
