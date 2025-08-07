@@ -3,8 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dayjs from 'dayjs';
-import { Department } from '@/types/entity/department';
-import { User } from '@/types';
+import { Manager } from '@/types';
 
 const formatDate = (date: string): string => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
@@ -12,7 +11,7 @@ const formatDate = (date: string): string => {
 
 defineProps({
     managers: {
-        type: Array as () => User[], // Specify the type of roles as an array of Role objects
+        type: Array as () => Manager[], // Specify the type of roles as an array of Role objects
         required: true,
     },
 });
@@ -29,6 +28,7 @@ defineProps({
                     <TableRow>
                         <TableHead class="w-[100px]"> Id </TableHead>
                         <TableHead> Name </TableHead>
+                        <TableHead> Department </TableHead>
                         <TableHead> Created At </TableHead>
                         <TableHead> Updated At </TableHead>
                     </TableRow>
@@ -44,6 +44,7 @@ defineProps({
                             {{ manager.name }}
                             <!-- Display the role name -->
                         </TableCell>
+                        <TableCell> {{ manager.department ? manager.department.name : 'No Department' }} </TableCell>
                         <TableCell>
                             {{ formatDate(manager.created_at) }}
                         </TableCell>

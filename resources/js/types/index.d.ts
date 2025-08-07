@@ -35,4 +35,11 @@ export interface User {
     updated_at: string;
 }
 
+export interface Manager extends User {
+    department: {
+        id: number;
+        name: string;
+    }
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
