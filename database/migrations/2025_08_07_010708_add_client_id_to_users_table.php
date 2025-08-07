@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Add the department_id column, making sure it can be nullable initially
-            $table->unsignedBigInteger('department_id')->nullable();
+            // Add the client_id column, making sure it can be nullable initially
+            $table->unsignedBigInteger('client_id')->nullable();
 
             // Add the foreign key constraint
-            $table->foreign('department_id')->references('id')->on('departments')->onDelete('set null');
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('set null');
         });
     }
 
@@ -26,9 +26,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            // Drop the foreign key and the department_id column
-            $table->dropForeign(['department_id']);
-            $table->dropColumn('department_id');
+            // Drop the foreign key and the client_id column
+            $table->dropForeign(['client_id']);
+            $table->dropColumn('client_id');
         });
     }
 };

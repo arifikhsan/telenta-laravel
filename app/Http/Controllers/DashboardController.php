@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
+use App\Models\Client;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

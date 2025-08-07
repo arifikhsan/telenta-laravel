@@ -15,8 +15,18 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Candidates',
+        href: '/dashboard/candidates',
+        icon: LayoutGrid,
+    },
+    {
         title: 'Managers',
         href: '/dashboard/managers',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Positions',
+        href: '/dashboard/positions',
         icon: LayoutGrid,
     },
     {
@@ -25,8 +35,8 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Department',
-        href: '/dashboard/departments',
+        title: 'Client',
+        href: '/dashboard/clients',
         icon: LayoutGrid,
     },
 ];

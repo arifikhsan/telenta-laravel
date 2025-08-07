@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ClientController extends Controller
+class PositionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(): Response
     {
-        $clients = Client::all();
-
-        return Inertia::render('Clients', ['clients' => $clients]);
+        $positions = Position::all();
+        return Inertia::render('Positions', ['positions' => $positions]);
     }
 
     /**

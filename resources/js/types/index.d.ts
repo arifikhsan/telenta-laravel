@@ -36,7 +36,7 @@ export interface User {
 }
 
 export interface Manager extends User {
-    department: {
+    client: {
         id: number;
         name: string;
     }

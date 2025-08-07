@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Department;
+use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -13,9 +13,9 @@ class ManagerSeeder extends Seeder
      */
     public function run(): void
     {
-        $manager = User::where(['name' => 'manager'])->first();
-        $department = Department::where(['name' => 'Java Developer'])->first();
-        $manager->department()->associate($department);
+        $manager = User::where(['name' => 'Slamet'])->first();
+        $client = Client::where(['name' => 'Telkomsel'])->first();
+        $manager->client()->associate($client);
         $manager->save();
     }
 }

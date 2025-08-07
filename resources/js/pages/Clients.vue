@@ -3,27 +3,27 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dayjs from 'dayjs';
-import { Department } from '@/types/entity/department';
+import { Client } from '@/types/entity/client';
 
 const formatDate = (date: string): string => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
 };
 
 defineProps({
-    departments: {
-        type: Array as () => Department[], // Specify the type of roles as an array of Role objects
+    clients: {
+        type: Array as () => Client[], // Specify the type of roles as an array of Role objects
         required: true,
     },
 });
 </script>
 
 <template>
-    <Head title="Departments" />
+    <Head title="Clients" />
 
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <Table>
-                <TableCaption>A list of your departments.</TableCaption>
+                <TableCaption>A list of your clients.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead class="w-[100px]"> Id </TableHead>
@@ -33,21 +33,21 @@ defineProps({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <!-- Loop through the departments and display them -->
-                    <TableRow v-for="department in departments" :key="department.id">
+                    <!-- Loop through the clients and display them -->
+                    <TableRow v-for="client in clients" :key="client.id">
                         <TableCell>
-                            {{ department.id }}
+                            {{ client.id }}
                             <!-- Display the role name -->
                         </TableCell>
                         <TableCell class="font-medium">
-                            {{ department.name }}
+                            {{ client.name }}
                             <!-- Display the role name -->
                         </TableCell>
                         <TableCell>
-                            {{ formatDate(department.created_at) }}
+                            {{ formatDate(client.created_at) }}
                         </TableCell>
                         <TableCell>
-                            {{ formatDate(department.updated_at) }}
+                            {{ formatDate(client.updated_at) }}
                         </TableCell>
                     </TableRow>
                 </TableBody>

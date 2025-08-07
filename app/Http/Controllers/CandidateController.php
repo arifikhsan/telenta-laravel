@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
+use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 
-class ClientController extends Controller
+class CandidateController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index()
     {
-        $clients = Client::all();
-
-        return Inertia::render('Clients', ['clients' => $clients]);
+        $candidates = Candidate::with(['position', 'manager'])->get();
+        return Inertia::render('Candidates', ['candidates' => $candidates]);
     }
 
     /**
