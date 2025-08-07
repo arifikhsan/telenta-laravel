@@ -23,7 +23,7 @@ defineProps({
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
             <Table>
-                <TableCaption>A list of your clients.</TableCaption>
+                <TableCaption>A list of your candidates.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead class="w-[100px]"> Id </TableHead>
