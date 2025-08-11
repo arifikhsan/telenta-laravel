@@ -30,6 +30,7 @@ defineProps({
                         <TableHead> Name </TableHead>
                         <TableHead> Position </TableHead>
                         <TableHead> Status </TableHead>
+                        <TableHead> CV </TableHead>
                         <TableHead> Manager </TableHead>
                         <TableHead> Days Required </TableHead>
                         <TableHead> Proposed Date </TableHead>
@@ -53,6 +54,17 @@ defineProps({
                         </TableCell>
                         <TableCell>
                             {{ candidate.status }}
+                        </TableCell>
+                        <TableCell>
+                            <!-- Display CV link if exists -->
+                            <a v-if="candidate.cv_url"
+                               :href="candidate.cv_url"
+                               target="_blank"
+                               class="text-blue-600 hover:underline">
+                                View CV
+                            </a>
+                            <!-- Otherwise, display 'No CV' -->
+                            <span v-else>No CV</span>
                         </TableCell>
                         <TableCell>
                             {{ candidate.manager.name }}

@@ -6,6 +6,8 @@ use App\Models\Candidate;
 use App\Models\Position;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CandidateSeeder extends Seeder
 {
@@ -22,6 +24,13 @@ class CandidateSeeder extends Seeder
         // Fetch the manager by name
         $manager = User::where('name', 'Slamet')->first();
 
+        $cvFileName = 'cv-template.pdf';
+        $filePath = 'cv/' . Str::random(10) . '-' . $cvFileName;
+
+        // Store the file in storage/app/cv
+        Storage::disk('public')->put($filePath, file_get_contents(database_path('seeders/files/' . $cvFileName)));
+
+
         // Use firstOrCreate to ensure candidates are not duplicated based on the 'name' field
         Candidate::firstOrCreate(
             ['name' => 'Mulyadi'], // Check if candidate with this name already exists
@@ -33,6 +42,7 @@ class CandidateSeeder extends Seeder
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),
                 'hr_interview_date' => now()->toDateString(),
+                'cv_path' => $filePath,
             ]
         );
 
@@ -46,6 +56,7 @@ class CandidateSeeder extends Seeder
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),
                 'hr_interview_date' => now()->toDateString(),
+                'cv_path' => $filePath,
             ]
         );
 
@@ -59,6 +70,7 @@ class CandidateSeeder extends Seeder
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),
                 'hr_interview_date' => now()->toDateString(),
+                'cv_path' => $filePath,
             ]
         );
     }

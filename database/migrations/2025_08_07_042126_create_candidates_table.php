@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('proposed_date');
             $table->date('cv_review_date');
             $table->date('hr_interview_date');
+            $table->string('cv_path');
             $table->timestamps();
         });
     }

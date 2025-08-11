@@ -9,6 +9,7 @@ export interface Candidate {
         id: number;
         name: string;
     }
+    cv_url: string;
     status: string;
     days_required: number;
     proposed_date: string;

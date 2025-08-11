@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Candidate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CandidateController extends Controller
@@ -13,7 +14,15 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        $candidates = Candidate::with(['position', 'manager'])->get();
+        $candidates = Candidate::with(['position', 'manager'])->get()->map(function ($candidate) {
+            // Generate the full URL for the CV, if it exists
+            $candidate->cv_url = $candidate->cv_path
+                ? Storage::disk('public')->url($candidate->cv_path)
+                : null; // If no CV exists, set null
+
+            return $candidate;
+        });
+
         return Inertia::render('Candidates', ['candidates' => $candidates]);
     }
 
