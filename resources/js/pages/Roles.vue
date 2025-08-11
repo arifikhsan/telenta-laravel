@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Role } from '@/types/entity/role';
+import { Role } from '@/types/entity/role-entity';
 import dayjs from 'dayjs';
 
 const breadcrumbs: BreadcrumbItem[] = [

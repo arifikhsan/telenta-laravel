@@ -10,8 +10,16 @@ use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function index(): Response
+    public function index()
     {
-        return Inertia::render('Dashboard');
+        $user = auth()->user()->load('role'); // Load the user's role
+
+        if ($user->role->name === 'manager') {
+            return redirect()->route('manager.dashboard');
+        }
+
+        return Inertia::render('Dashboard', [
+            'user' => $user, // Pass the entire user data or just the role
+        ]);
     }
 }

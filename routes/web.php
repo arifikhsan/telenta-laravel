@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ManagerCandidateController;
 use App\Http\Controllers\ManagerController;
+use App\Http\Controllers\ManagerDashboardController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +27,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/managers', [ManagerController::class, 'index'])->name('dashboard.managers');
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
     Route::get('dashboard/positions', [PositionController::class, 'index'])->name('dashboard.positions');
+
+    Route::get('manager/dashboard', [ManagerDashboardController::class, 'index'])->name('manager.dashboard');
+    Route::get('manager/dashboard/candidates', [ManagerCandidateController::class, 'index'])->name('manager.dashboard.candidates');
+
 });
 
 require __DIR__.'/settings.php';

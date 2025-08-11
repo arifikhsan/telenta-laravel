@@ -1,5 +1,6 @@
 import type { LucideIcon } from 'lucide-vue-next';
 import type { Config } from 'ziggy-js';
+import { UserEntity } from '@/types/user-entity';
 
 export interface Auth {
     user: User;
@@ -25,17 +26,8 @@ export type AppPageProps<T extends Record<string, unknown> = Record<string, unkn
     sidebarOpen: boolean;
 };
 
-export interface User {
-    id: number;
-    name: string;
-    email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
-}
 
-export interface Manager extends User {
+export interface Manager extends UserEntity {
     client: {
         id: number;
         name: string;
