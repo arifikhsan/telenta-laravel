@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dayjs from 'dayjs';
 import { Candidate } from '@/types/entity/candidate';
+import { Button } from '@/components/ui/button';
 
 const formatDate = (date: string): string => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
@@ -22,6 +23,12 @@ defineProps({
 
     <AppLayout>
         <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+            <div class="flex justify-end">
+                <Link :href="route('dashboard.candidates.create')">
+                    <Button variant="default">Tambah Kandidat Baru</Button>
+                </Link>
+            </div>
+
             <Table>
                 <TableCaption>A list of your candidates.</TableCaption>
                 <TableHeader>

@@ -15,7 +15,6 @@ class ManagerCandidateController extends Controller
     public function index()
     {
         $manager = auth()->user();
-//        dd($manager);
         $candidates = Candidate
             ::with(['position', 'manager'])->
             where('manager_id', $manager->id)->get()->map(function ($candidate) {
