@@ -1,55 +1,47 @@
 <script setup lang="ts">
+import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatStandardDate } from '@/lib/date-util';
+import { PositionEntity } from '@/types/entity/position-entity';
 import { Head } from '@inertiajs/vue3';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import dayjs from 'dayjs';
-import { Position } from '@/types/entity/position';
-
-const formatDate = (date: string): string => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
-};
+import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
+import { h } from 'vue';
 
 defineProps({
-    positions: {
-        type: Array as () => Position[], // Specify the type of roles as an array of Role objects
-        required: true,
-    },
+  positions: {
+    type: Array as () => PositionEntity[], // Specify the type of roles as an array of Role objects
+    required: true,
+  },
 });
+
+const columnHelper = createColumnHelper<PositionEntity>();
+
+const columns: ColumnDef<PositionEntity, any>[] = [
+  columnHelper.accessor('id', {
+    header: 'Id',
+    cell: ({ row }) => h('div', row.getValue('id')),
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+  }),
+  columnHelper.accessor('created_at', {
+    header: 'Created At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
+  }),
+  columnHelper.accessor('updated_at', {
+    header: 'Updated At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  }),
+];
 </script>
 
 <template>
-    <Head title="Positions" />
+  <Head title="Positions" />
 
-    <AppLayout>
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <Table>
-                <TableCaption>A list of your positions.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead class="w-[100px]"> Id </TableHead>
-                        <TableHead> Name </TableHead>
-                        <TableHead> Created At </TableHead>
-                        <TableHead> Updated At </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <!-- Loop through the positions and display them -->
-                    <TableRow v-for="position in positions" :key="position.id">
-                        <TableCell>
-                            {{ position.id }}
-                        </TableCell>
-                        <TableCell class="font-medium">
-                            {{ position.name }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(position.created_at) }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(position.updated_at) }}
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </AppLayout>
+  <AppLayout>
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <DataTable title="Positions" description="Candidate positions" :columns="columns" :data="positions" />
+    </div>
+  </AppLayout>
 </template>

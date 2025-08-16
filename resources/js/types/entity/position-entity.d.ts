@@ -1,4 +1,4 @@
-export interface Position {
+export interface PositionEntity {
     id: number;
     name: string;
     created_at: string;

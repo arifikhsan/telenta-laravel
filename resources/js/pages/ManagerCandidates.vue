@@ -3,7 +3,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dayjs from 'dayjs';
-import { Candidate } from '@/types/entity/candidate';
+import { Candidate } from '@/types/entity/candidate-entity';
 
 const formatDate = (date: string): string => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed

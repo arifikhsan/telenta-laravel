@@ -1,4 +1,4 @@
-export interface Candidate {
+export interface CandidateEntity {
     id: number;
     name: string;
     position: {

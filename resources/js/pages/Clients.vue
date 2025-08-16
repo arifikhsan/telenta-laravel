@@ -23,7 +23,7 @@ const columns: ColumnDef<ClientEntity, any>[] = [
   }),
   columnHelper.accessor('name', {
     header: 'Name',
-    cell: ({ row }) => h('div', { class: 'capitalize font-medium' }, row.getValue('name')),
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
   }),
   columnHelper.accessor('created_at', {
     header: 'Created At',
