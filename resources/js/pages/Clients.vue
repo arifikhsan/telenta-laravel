@@ -1,57 +1,47 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatStandardDate } from '@/lib/date-util';
+import { ClientEntity } from '@/types/entity/client-entity';
 import { Head } from '@inertiajs/vue3';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import dayjs from 'dayjs';
-import { Client } from '@/types/entity/client';
-
-const formatDate = (date: string): string => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
-};
+import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
+import { h } from 'vue';
+import DataTable from '@/components/ui/table/DataTable.vue';
 
 defineProps({
-    clients: {
-        type: Array as () => Client[], // Specify the type of roles as an array of Role objects
-        required: true,
-    },
+  clients: {
+    type: Array as () => ClientEntity[],
+    required: true,
+  },
 });
+
+const columnHelper = createColumnHelper<ClientEntity>();
+
+const columns: ColumnDef<ClientEntity, any>[] = [
+  columnHelper.accessor('id', {
+    header: 'Id',
+    cell: ({ row }) => h('div', row.getValue('id')),
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: ({ row }) => h('div', { class: 'capitalize font-medium' }, row.getValue('name')),
+  }),
+  columnHelper.accessor('created_at', {
+    header: 'Created At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
+  }),
+  columnHelper.accessor('updated_at', {
+    header: 'Updated At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  }),
+];
 </script>
 
 <template>
-    <Head title="Clients" />
+  <Head title="Clients" />
 
-    <AppLayout>
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <Table>
-                <TableCaption>A list of your clients.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead class="w-[100px]"> Id </TableHead>
-                        <TableHead> Name </TableHead>
-                        <TableHead> Created At </TableHead>
-                        <TableHead> Updated At </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <!-- Loop through the clients and display them -->
-                    <TableRow v-for="client in clients" :key="client.id">
-                        <TableCell>
-                            {{ client.id }}
-                            <!-- Display the role name -->
-                        </TableCell>
-                        <TableCell class="font-medium">
-                            {{ client.name }}
-                            <!-- Display the role name -->
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(client.created_at) }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(client.updated_at) }}
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </AppLayout>
+  <AppLayout>
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <DataTable title="Clients" description="User clients" :columns="columns" :data="clients" />
+    </div>
+  </AppLayout>
 </template>

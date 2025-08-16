@@ -17,8 +17,6 @@ import { Calendar as CalendarIcon } from 'lucide-vue-next';
 import { PropType, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
-// import { Inertia } from 'inertiajs/inertia-laravel'; // Import Inertia
-
 const formSchema = toTypedSchema(
     z.object({
         name: z.string().min(2).max(50),

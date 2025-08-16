@@ -10,6 +10,17 @@ const formatDate = (date: string): string => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
 };
 
+const statusOptions = [
+    { value: 'cv_reviewed', label: 'CV Reviewed' },
+    { value: 'hr_interviewed', label: 'HR Interviewed' },
+    { value: 'hired', label: 'Hired' },
+];
+
+function getStatusLabel(value: string): string {
+    const option = statusOptions.find(option => option.value === value);
+    return option ? option.label : value;
+}
+
 defineProps({
     candidates: {
         type: Array as () => Candidate[], // Specify the type of roles as an array of Role objects
@@ -60,7 +71,7 @@ defineProps({
                             {{ candidate.position.name }}
                         </TableCell>
                         <TableCell>
-                            {{ candidate.status }}
+                            {{ getStatusLabel(candidate.status) }}
                         </TableCell>
                         <TableCell>
                             <!-- Display CV link if exists -->
