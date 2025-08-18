@@ -40,6 +40,11 @@ const adminNavItems: NavItem[] = [
         href: '/dashboard/clients',
         icon: LayoutGrid,
     },
+    {
+        title: 'Question',
+        href: '/dashboard/questions',
+        icon: LayoutGrid,
+    }
 ];
 
 const managerNavItems: NavItem[] = [
