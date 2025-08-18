@@ -1,4 +1,4 @@
-export interface Client {
+export interface ClientEntity {
     id: number;
     name: string;
     created_at: string;

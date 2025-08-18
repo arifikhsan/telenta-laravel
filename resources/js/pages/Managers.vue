@@ -1,59 +1,54 @@
 <script setup lang="ts">
+import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatStandardDate } from '@/lib/date-util';
+import { ManagerEntity } from '@/types/entity/manager-entity';
 import { Head } from '@inertiajs/vue3';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import dayjs from 'dayjs';
-import { Manager } from '@/types';
-
-const formatDate = (date: string): string => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
-};
+import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
+import { h } from 'vue';
 
 defineProps({
-    managers: {
-        type: Array as () => Manager[], // Specify the type of roles as an array of Role objects
-        required: true,
-    },
+  managers: {
+    type: Array as () => ManagerEntity[],
+    required: true,
+  },
 });
+
+const columnHelper = createColumnHelper<ManagerEntity>();
+
+const columns: ColumnDef<ManagerEntity, any>[] = [
+  columnHelper.accessor('id', {
+    header: 'Id',
+    cell: ({ row }) => h('div', row.getValue('id')),
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+  }),
+  columnHelper.accessor((row) => row.client.name, {
+    id: 'client.name',
+    header: 'Client',
+    cell: ({ row }) => {
+      return h('div', { class: 'capitalize' }, row.getValue('client.name'));
+    },
+  }),
+  columnHelper.accessor('created_at', {
+    header: 'Created At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
+  }),
+  columnHelper.accessor('updated_at', {
+    header: 'Updated At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  }),
+];
 </script>
 
 <template>
-    <Head title="Managers" />
+  <Head title="Managers" />
 
-    <AppLayout>
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <Table>
-                <TableCaption>A list of your managers.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead class="w-[100px]"> Id </TableHead>
-                        <TableHead> Name </TableHead>
-                        <TableHead> Client </TableHead>
-                        <TableHead> Created At </TableHead>
-                        <TableHead> Updated At </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <!-- Loop through the managers and display them -->
-                    <TableRow v-for="manager in managers" :key="manager.id">
-                        <TableCell>
-                            {{ manager.id }}
-                            <!-- Display the role name -->
-                        </TableCell>
-                        <TableCell class="font-medium">
-                            {{ manager.name }}
-                            <!-- Display the role name -->
-                        </TableCell>
-                        <TableCell> {{ manager.client ? manager.client.name : 'No Client' }} </TableCell>
-                        <TableCell>
-                            {{ formatDate(manager.created_at) }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(manager.updated_at) }}
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </AppLayout>
+  <AppLayout>
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <DataTable title="Managers" description="User managers with client" :columns="columns" :data="managers" />
+    </div>
+  </AppLayout>
 </template>

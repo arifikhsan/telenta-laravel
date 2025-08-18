@@ -39,7 +39,7 @@ services:
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
             MYSQL_EXTRA_OPTIONS: '${MYSQL_EXTRA_OPTIONS}'
         volumes:
-            - 'sail-mysql:/var/lib/mysql'
+            - ./data/db:/var/lib/mysql
             - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
             - sail
@@ -71,7 +71,5 @@ networks:
     sail:
         driver: bridge
 volumes:
-    sail-mysql:
-        driver: local
     sail-redis:
         driver: local

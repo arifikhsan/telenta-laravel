@@ -1,95 +1,110 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button';
+import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import dayjs from 'dayjs';
-import { Candidate } from '@/types/entity/candidate';
-
-const formatDate = (date: string): string => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
-};
+import { getStatusLabel } from '@/lib/candidate-util';
+import { formatStandardDate } from '@/lib/date-util';
+import { CandidateEntity } from '@/types/entity/candidate-entity';
+import { Head, Link } from '@inertiajs/vue3';
+import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
+import { h } from 'vue';
 
 defineProps({
-    candidates: {
-        type: Array as () => Candidate[], // Specify the type of roles as an array of Role objects
-        required: true,
-    },
+  candidates: {
+    type: Array as () => CandidateEntity[],
+    required: true,
+  },
 });
+
+const columnHelper = createColumnHelper<CandidateEntity>();
+
+const columns: ColumnDef<CandidateEntity, any>[] = [
+  columnHelper.accessor('id', {
+    header: 'Id',
+    cell: ({ row }) => h('div', row.getValue('id')),
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+  }),
+  columnHelper.accessor('status', {
+    header: 'Status',
+    cell: ({ row }) => {
+      return h('div', getStatusLabel(row.getValue('status')));
+    },
+  }),
+  columnHelper.accessor('cv_url', {
+    header: 'CV',
+    cell: ({ row }) => {
+      const cvUrl = row.getValue('cv_url') as string | null;
+
+      if (cvUrl) {
+        return h(
+          'a',
+          {
+            href: cvUrl,
+            target: '_blank',
+            class: 'text-blue-600 hover:underline',
+          },
+          'View CV',
+        );
+      }
+
+      return h('span', 'No CV');
+    },
+  }),
+  columnHelper.accessor((row) => row.position.name, {
+    id: 'position.name',
+    header: 'Position',
+    cell: ({ row }) => {
+      return h('div', { class: 'capitalize' }, row.getValue('position.name'));
+    },
+  }),
+  columnHelper.accessor((row) => row.manager.name, {
+    id: 'manager.name',
+    header: 'Manager',
+    cell: ({ row }) => {
+      return h('div', { class: 'capitalize' }, row.getValue('manager.name'));
+    },
+  }),
+  columnHelper.accessor('days_required', {
+    header: 'Days Required',
+    cell: ({ row }) => h('div', row.getValue('days_required')),
+  }),
+  columnHelper.accessor('proposed_date', {
+    header: 'Proposed Date',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('proposed_date'))),
+  }),
+  columnHelper.accessor('cv_review_date', {
+    header: 'CV Review Date',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('cv_review_date'))),
+  }),
+  columnHelper.accessor('hr_interview_date', {
+    header: 'HR Interview Date',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('hr_interview_date'))),
+  }),
+  columnHelper.accessor('created_at', {
+    header: 'Created At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
+  }),
+  columnHelper.accessor('updated_at', {
+    header: 'Updated At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  }),
+];
 </script>
 
 <template>
-    <Head title="Candidates" />
+  <Head title="Candidates" />
 
-    <AppLayout>
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-            <Table>
-                <TableCaption>A list of your candidates.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead class="w-[100px]"> Id </TableHead>
-                        <TableHead> Name </TableHead>
-                        <TableHead> Position </TableHead>
-                        <TableHead> Status </TableHead>
-                        <TableHead> CV </TableHead>
-                        <TableHead> Manager </TableHead>
-                        <TableHead> Days Required </TableHead>
-                        <TableHead> Proposed Date </TableHead>
-                        <TableHead> CV Scan Date </TableHead>
-                        <TableHead> HR Interview Date </TableHead>
-                        <TableHead> Created At </TableHead>
-                        <TableHead> Updated At </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <!-- Loop through the candidates and display them -->
-                    <TableRow v-for="candidate in candidates" :key="candidate.id">
-                        <TableCell>
-                            {{ candidate.id }}
-                        </TableCell>
-                        <TableCell class="font-medium">
-                            {{ candidate.name }}
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.position.name }}
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.status }}
-                        </TableCell>
-                        <TableCell>
-                            <!-- Display CV link if exists -->
-                            <a v-if="candidate.cv_url"
-                               :href="candidate.cv_url"
-                               target="_blank"
-                               class="text-blue-600 hover:underline">
-                                View CV
-                            </a>
-                            <!-- Otherwise, display 'No CV' -->
-                            <span v-else>No CV</span>
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.manager.name }}
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.days_required }}
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.proposed_date }}
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.cv_review_date }}
-                        </TableCell>
-                        <TableCell>
-                            {{ candidate.hr_interview_date }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(candidate.created_at) }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(candidate.updated_at) }}
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </AppLayout>
+  <AppLayout>
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <div class="flex justify-end">
+        <Link :href="route('dashboard.candidates.create')">
+          <Button variant="default">Tambah Kandidat Baru</Button>
+        </Link>
+      </div>
+      <DataTable title="Candidates" description="List of candidates" :columns="columns" :data="candidates" />
+    </div>
+  </AppLayout>
 </template>

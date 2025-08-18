@@ -1,71 +1,54 @@
 <script setup lang="ts">
+import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { formatStandardDate } from '@/lib/date-util';
 import { type BreadcrumbItem } from '@/types';
+import { RoleEntity } from '@/types/entity/role-entity';
 import { Head } from '@inertiajs/vue3';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Role } from '@/types/entity/role-entity';
-import dayjs from 'dayjs';
+import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
+import { h } from 'vue';
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Role',
-        href: '/roles',
-    },
+const columnHelper = createColumnHelper<RoleEntity>();
+
+const columns: ColumnDef<RoleEntity, any>[] = [
+  columnHelper.accessor('id', {
+    header: 'Id',
+    cell: ({ row }) => h('div', row.getValue('id')),
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+  }),
+  columnHelper.accessor('created_at', {
+    header: 'Created At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
+  }),
+  columnHelper.accessor('updated_at', {
+    header: 'Updated At',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  }),
 ];
 
-const formatDate =(date: string): string => {
-    return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
-}
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Role',
+    href: '/roles',
+  },
+];
 
-defineProps({
-    roles: {
-        type: Array as () => Role[], // Specify the type of roles as an array of Role objects
-        required: true,
-    },
-});
+
+const props = defineProps<{
+  roles: RoleEntity[];
+}>();
+
 </script>
 
 <template>
-    <Head title="Roles" />
+  <Head title="Roles" />
 
-    <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-            <Table>
-                <TableCaption>A list of your roles.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead class="w-[100px]">
-                            Id
-                        </TableHead>
-                        <TableHead>
-                            Name
-                        </TableHead>
-                        <TableHead>
-                            Created At
-                        </TableHead>
-                        <TableHead>
-                            Updated At
-                        </TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    <!-- Loop through the roles and display them -->
-                    <TableRow v-for="role in roles" :key="role.id">
-                        <TableCell>
-                            {{ role.id }} <!-- Display the role name -->
-                        </TableCell>
-                        <TableCell class="font-medium">
-                            {{ role.name }} <!-- Display the role name -->
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(role.created_at) }}
-                        </TableCell>
-                        <TableCell>
-                            {{ formatDate(role.updated_at) }}
-                        </TableCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </AppLayout>
+  <AppLayout :breadcrumbs="breadcrumbs">
+    <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <DataTable title="Role" description="User roles" :columns="columns" :data="props.roles" />
+    </div>
+  </AppLayout>
 </template>

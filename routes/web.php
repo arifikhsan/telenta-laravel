@@ -26,6 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/clients', [ClientController::class, 'index'])->name('dashboard.clients');
     Route::get('dashboard/managers', [ManagerController::class, 'index'])->name('dashboard.managers');
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
+    Route::get('dashboard/candidates/create', [CandidateController::class, 'create'])->name('dashboard.candidates.create');
+    Route::post('dashboard/candidates/store', [CandidateController::class, 'store'])->name('dashboard.candidates.store');
     Route::get('dashboard/positions', [PositionController::class, 'index'])->name('dashboard.positions');
 
     Route::get('manager/dashboard', [ManagerDashboardController::class, 'index'])->name('manager.dashboard');

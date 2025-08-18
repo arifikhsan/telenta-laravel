@@ -3,11 +3,22 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import dayjs from 'dayjs';
-import { Candidate } from '@/types/entity/candidate';
+import { Candidate } from '@/types/entity/candidate-entity';
 
 const formatDate = (date: string): string => {
     return dayjs(date).format('YYYY-MM-DD HH:mm:ss'); // Format as needed
 };
+
+const statusOptions = [
+    { value: 'cv_reviewed', label: 'CV Reviewed' },
+    { value: 'hr_interviewed', label: 'HR Interviewed' },
+    { value: 'hired', label: 'Hired' },
+];
+
+function getStatusLabel(value: string): string {
+    const option = statusOptions.find(option => option.value === value);
+    return option ? option.label : value;
+}
 
 defineProps({
     candidates: {
@@ -53,7 +64,7 @@ defineProps({
                             {{ candidate.position.name }}
                         </TableCell>
                         <TableCell>
-                            {{ candidate.status }}
+                            {{ getStatusLabel(candidate.status) }}
                         </TableCell>
                         <TableCell>
                             <!-- Display CV link if exists -->

@@ -15,10 +15,10 @@ class ManagerCandidateController extends Controller
     public function index()
     {
         $manager = auth()->user();
-//        dd($manager);
         $candidates = Candidate
-            ::with(['position', 'manager'])->
-            where('manager_id', $manager->id)->get()->map(function ($candidate) {
+            ::with(['position', 'manager'])
+            ->orderBy('id', 'desc')
+            ->where('manager_id', $manager->id)->get()->map(function ($candidate) {
                 // Generate the full URL for the CV, if it exists
                 $candidate->cv_url = $candidate->cv_path
                     ? Storage::disk('public')->url($candidate->cv_path)
