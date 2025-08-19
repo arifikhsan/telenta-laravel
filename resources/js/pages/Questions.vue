@@ -2,28 +2,28 @@
 import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
-import { PositionEntity } from '@/types/entity/position-entity';
+import { QuestionEntity } from '@/types/entity/question-entity';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';
 
 defineProps({
-  positions: {
-    type: Array as () => PositionEntity[], // Specify the type of roles as an array of Role objects
+  questions: {
+    type: Array as () => QuestionEntity[], // Specify the type of roles as an array of Role objects
     required: true,
   },
 });
 
-const columnHelper = createColumnHelper<PositionEntity>();
+const columnHelper = createColumnHelper<QuestionEntity>();
 
-const columns: ColumnDef<PositionEntity, any>[] = [
+const columns: ColumnDef<QuestionEntity, any>[] = [
   columnHelper.accessor('id', {
     header: 'Id',
     cell: ({ row }) => h('div', row.getValue('id')),
   }),
-  columnHelper.accessor('name', {
-    header: 'Name',
-    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
+  columnHelper.accessor('question', {
+    header: 'Question',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('question')),
   }),
   columnHelper.accessor('created_at', {
     header: 'Created At',
@@ -33,28 +33,15 @@ const columns: ColumnDef<PositionEntity, any>[] = [
     header: 'Updated At',
     cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
   }),
-  columnHelper.accessor('id', {
-    header: 'Questions',
-    cell: ({ row }) => {
-        return h('a', {
-            href: `/dashboard/positions/questions?id=${row.original.id}`,
-            target: '_blank',
-            class: 'text-blue-600 hover:underline',
-          },
-          'View',
-        );
-      
-    },
-  }),
 ];
 </script>
 
 <template>
-  <Head title="Positions" />
+  <Head title="Question" />
 
   <AppLayout>
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-      <DataTable title="Positions" description="Candidate positions" :columns="columns" :data="positions" />
+      <DataTable title="Question" description="Interview Question" :columns="columns" :data="questions" />
     </div>
   </AppLayout>
 </template>

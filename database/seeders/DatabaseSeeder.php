@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder
             ManagerSeeder::class,
             PositionSeeder::class,
             CandidateSeeder::class,
+            QuestionSeeder::class,
+            QuestionPositionMapSeeder::class
         ]);
     }
 }
