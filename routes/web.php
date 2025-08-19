@@ -7,6 +7,8 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ManagerDashboardController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuestionPositionMapController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -28,7 +30,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
     Route::get('dashboard/candidates/create', [CandidateController::class, 'create'])->name('dashboard.candidates.create');
     Route::post('dashboard/candidates/store', [CandidateController::class, 'store'])->name('dashboard.candidates.store');
+
     Route::get('dashboard/positions', [PositionController::class, 'index'])->name('dashboard.positions');
+    Route::get('dashboard/positions/questions', [QuestionPositionMapController::class, 'index'])->name('dashboard.positions.questions');
+    Route::get('dashboard/questions', [QuestionController::class, 'index'])->name('dashboard.questions');
 
     Route::get('manager/dashboard', [ManagerDashboardController::class, 'index'])->name('manager.dashboard');
     Route::get('manager/dashboard/candidates', [ManagerCandidateController::class, 'index'])->name('manager.dashboard.candidates');

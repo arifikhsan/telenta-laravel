@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class QuestionPositionMap extends Model
 {
-     public function position() {
+    public function position() {
         return $this->belongsTo(Position::class);
     }
 
