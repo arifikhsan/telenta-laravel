@@ -232,8 +232,7 @@ const mobileMenuOpen = ref(false);
                                 Kelola data kandidat dengan lebih mudah
                             </h1>
                             <p class="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-                                Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet fugiat veniam
-                                occaecat.
+                                Solusi digital rekrutmen terintegrasi.
                             </p>
                             <div class="mt-10 flex items-center justify-center gap-x-6">
                                 <Link
