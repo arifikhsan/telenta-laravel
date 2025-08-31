@@ -2,21 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Position;
 use App\Models\QuestionPositionMap;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class PositionController extends Controller
+class QuestionPositionMapController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $positions = Position::all();
-        return Inertia::render('Positions', ['positions' => $positions]);
+        $id = $request->query('id');
+
+        $questionPositionMap = QuestionPositionMap::with(['position', 'question'])
+        ->where('position_id', $id)
+        ->get(); 
+        return Inertia::render('QuestionPositionMaps', ['questionPositionMaps' => $questionPositionMap]);
     }
 
     /**
