@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -30,7 +31,13 @@ const columns: ColumnDef<CandidateEntity, any>[] = [
   columnHelper.accessor('status', {
     header: 'Status',
     cell: ({ row }) => {
-      return h('div', getStatusLabel(row.getValue('status')));
+      const status = row.getValue('status') as string;
+
+      return h(
+        Badge,
+        { class: 'capitalize' },
+        { default: () => getStatusLabel(status) },
+      );
     },
   }),
   columnHelper.accessor('cv_url', {

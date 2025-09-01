@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Badge from '@/components/ui/badge/Badge.vue';
 import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
@@ -24,7 +25,15 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
   }),
   columnHelper.accessor('status', {
     header: 'Status',
-    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('status')),
+    cell: ({ row }) => {
+      const status = row.getValue('status');
+
+      return h(
+        Badge,
+        { class: 'capitalize' },
+        { default: () => status },
+      );
+    },
   }),
   columnHelper.accessor('requested_count', {
     header: 'Requested Count',
@@ -65,7 +74,12 @@ const props = defineProps<{
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-      <DataTable title="Manager Candidate Request" description="Manager Candidate Request" :columns="columns" :data="props.managerCandidateRequests" />
+      <DataTable
+        title="Manager Candidate Request"
+        description="Manager Candidate Request"
+        :columns="columns"
+        :data="props.managerCandidateRequests"
+      />
     </div>
   </AppLayout>
 </template>
