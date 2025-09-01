@@ -24,7 +24,7 @@ class CandidateController extends Controller
             ->map(function ($candidate) {
                 // Generate the full URL for the CV, if it exists
                 $candidate->cv_url = $candidate->cv_path
-                    ? Storage::disk('public')->url($candidate->cv_path)
+                    ? Storage::url($candidate->cv_path)
                     : null; // If no CV exists, set null
 
                 return $candidate;
@@ -120,7 +120,7 @@ class CandidateController extends Controller
      */
     public function edit(string $id)
     {
-        $candidate = Candidate::findOrFail($id);
+        $candidate = Candidate::with(['position', 'manager'])->findOrFail($id);
         $managers = User::whereHas('role', function ($query) {
             $query->where('name', 'manager');  // Make sure the role is 'manager'
         })->get();
@@ -141,7 +141,7 @@ class CandidateController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:50',
-            'manager_id' => 'required|exists:managers,id',
+            'manager_id' => 'required|exists:users,id',
             'position_id' => 'required|exists:positions,id',
             'status' => 'required|string',
             'days_required' => 'nullable|integer|min:1',
@@ -152,12 +152,23 @@ class CandidateController extends Controller
         ]);
 
         if ($request->hasFile('cv')) {
-            $validated['cv_url'] = $request->file('cv')->store('cvs', 'public');
+            // delete old CV if exists
+            if ($candidate->cv_path && Storage::disk('public')->exists($candidate->cv_path)) {
+                Storage::disk('public')->delete($candidate->cv_path);
+            }
+
+            $cvFile = $request->file('cv');
+            $cvFileName = Str::random(10) . '-' . $cvFile->getClientOriginalName();
+            $cvPath = 'cv/' . $cvFileName;
+
+            Storage::disk('public')->put($cvPath, file_get_contents($cvFile));
+
+            $candidate->cv_path = $cvPath;
         }
 
         $candidate->update($validated);
 
-        return redirect()->route('dashboard.candidates.index')->with('message', 'Candidate updated successfully!');
+        return redirect()->route('dashboard.candidates')->with('message', 'Candidate updated successfully!');
     }
 
     /**

@@ -37,7 +37,7 @@ class CandidateSeeder extends Seeder
             [
                 'position_id' => $javaDeveloperPosition->id,
                 'manager_id' => $manager->id,
-                'status' => 'CV Reviewed',
+                'status' => 'cv_reviewed',
                 'days_required' => 10,
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),
@@ -51,7 +51,7 @@ class CandidateSeeder extends Seeder
             [
                 'position_id' => $itSupportPosition->id,
                 'manager_id' => $manager->id,
-                'status' => 'HR Interviewed',
+                'status' => 'hr_interviewed',
                 'days_required' => 7,
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),
@@ -65,7 +65,7 @@ class CandidateSeeder extends Seeder
             [
                 'position_id' => $productManagerPosition->id,
                 'manager_id' => $manager->id,
-                'status' => 'Hired',
+                'status' => 'hired',
                 'days_required' => 14,
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),

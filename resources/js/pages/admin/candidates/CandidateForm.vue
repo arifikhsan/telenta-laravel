@@ -5,26 +5,29 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { formatStandardDateFromDate } from '@/lib/date-util';
 import { cn } from '@/lib/utils';
+import { CandidateEntity } from '@/types/entity/candidate-entity';
+import { ManagerEntity } from '@/types/entity/manager-entity';
 import { PositionEntity } from '@/types/entity/position-entity';
-import { CalendarDate, DateFormatter, DateValue, getLocalTimeZone, ZonedDateTime } from '@internationalized/date';
+import { CalendarDate, DateFormatter, DateValue, getLocalTimeZone } from '@internationalized/date';
 import { toTypedSchema } from '@vee-validate/zod';
+import { isEmpty } from 'lodash';
 import { useForm } from 'vee-validate';
-import { PropType, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import * as z from 'zod';
 
 const props = defineProps({
-  modelValue: {
-    type: Object as PropType<any>, // Candidate initial values
-    required: false,
-    default: () => ({}),
+  candidate: {
+    type: Object as () => CandidateEntity,
+    required: true,
   },
   managers: {
-    type: Array as PropType<Array<{ id: number; name: string }>>,
+    type: Array as () => ManagerEntity[],
     required: true,
   },
   positions: {
-    type: Array as PropType<PositionEntity[]>,
+    type: Array as () => PositionEntity[],
     required: true,
   },
 });
@@ -38,45 +41,9 @@ const formSchema = toTypedSchema(
     position_id: z.number().min(1, 'Position is required'),
     status: z.string().min(1, 'Status is required'),
     days_required: z.number().min(1, 'Days Required is required'),
-    proposed_date: z
-      .custom<DateValue>(
-        (value) => {
-          if (value instanceof Date) {
-            return true; // Can be a Date object
-          }
-          return value && value.toDate instanceof Function; // Or if it's a DateValue object
-        },
-        {
-          message: 'Invalid proposed date',
-        },
-      )
-      .optional(),
-    cv_review_date: z
-      .custom<DateValue>(
-        (value) => {
-          if (value instanceof Date) {
-            return true; // Can be a Date object
-          }
-          return value && value.toDate instanceof Function; // Or if it's a DateValue object
-        },
-        {
-          message: 'Invalid cv review date',
-        },
-      )
-      .optional(),
-    hr_interview_date: z
-      .custom<DateValue>(
-        (value) => {
-          if (value instanceof Date) {
-            return true; // Can be a Date object
-          }
-          return value && value.toDate instanceof Function; // Or if it's a DateValue object
-        },
-        {
-          message: 'Invalid hr review date',
-        },
-      )
-      .optional(),
+    proposed_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid proposed date' }).optional(),
+    cv_review_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid cv review date' }).optional(),
+    hr_interview_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid hr review date' }).optional(),
     cv: z
       .instanceof(File) // Ensure it's a file
       .refine((file) => !file || file.size <= 10 * 1024 * 1024, 'CV file should be less than 10MB')
@@ -84,46 +51,50 @@ const formSchema = toTypedSchema(
   }),
 );
 
+function dateToCalendarDate(d: Date | undefined): DateValue | undefined {
+  console.log('d: ', d);
+  if (!d) return undefined;
+  if (typeof d === 'string') d = new Date(d);
+  return new CalendarDate(d.getFullYear(), d.getMonth() + 1, d.getDate());
+}
+
+function calendarDateToDate(v: DateValue | undefined): Date | undefined {
+  console.log('v: ', v);
+  if (!v) return undefined;
+  return v.toDate('UTC'); // or getLocalTimeZone() if you want local
+}
+console.log('candidate: ', props.candidate);
+console.log('proposed_date: ', props.candidate.proposed_date);
+console.log('cv: ', props.candidate.cv_path);
+
 const form = useForm({
   validationSchema: formSchema,
   initialValues: {
-    name: props.modelValue?.name || '',
-    manager_id: props.modelValue?.manager_id || 0,
-    position_id: props.modelValue?.position_id || 0,
-    status: props.modelValue?.status || '',
-    days_required: props.modelValue?.days_required || 1,
-    proposed_date: props.modelValue?.proposed_date,
-    cv_review_date: props.modelValue?.cv_review_date,
-    hr_interview_date: props.modelValue?.hr_interview_date,
+    name: props.candidate?.name || '',
+    manager_id: props.candidate ? props.candidate.manager_id : 0,
+    position_id: props.candidate ? props.candidate.position_id : 0,
+    status: props.candidate?.status || '',
+    days_required: props.candidate?.days_required || 1,
+    proposed_date: !isEmpty(props.candidate) ? new Date(props.candidate.proposed_date) : undefined,
+    cv_review_date: !isEmpty(props.candidate) ? new Date(props.candidate.cv_review_date) : undefined,
+    hr_interview_date: !isEmpty(props.candidate) ? new Date(props.candidate.hr_interview_date) : undefined,
     cv: null,
   },
 });
 
-const proposedDateValue = ref<CalendarDate | ZonedDateTime | undefined>(
-  props.modelValue?.proposed_date
-    ? new CalendarDate(props.modelValue.proposed_date.year, props.modelValue.proposed_date.month, props.modelValue.proposed_date.day)
-    : undefined,
-);
-const cvReviewDateValue = ref<CalendarDate | ZonedDateTime | undefined>(
-  props.modelValue?.cv_review_date
-    ? new CalendarDate(props.modelValue.cv_review_date.year, props.modelValue.cv_review_date.month, props.modelValue.cv_review_date.day)
-    : undefined,
-);
-const hrInterviewDateValue = ref<CalendarDate | ZonedDateTime | undefined>(
-  props.modelValue?.hr_interview_date
-    ? new CalendarDate(props.modelValue.hr_interview_date.year, props.modelValue.hr_interview_date.month, props.modelValue.hr_interview_date.day)
-    : undefined,
-);
+const proposedDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.proposed_date));
+const cvReviewDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.cv_review_date));
+const hrInterviewDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.hr_interview_date));
 const cvFile = ref<File | null>(null);
 
-watch(proposedDateValue, (val) => {
-  form.setFieldValue('proposed_date', val);
+watch(proposedDateValue, (val: any) => {
+  form.setFieldValue('proposed_date', calendarDateToDate(val));
 });
-watch(cvReviewDateValue, (val) => {
-  form.setFieldValue('cv_review_date', val);
+watch(cvReviewDateValue, (val: any) => {
+  form.setFieldValue('cv_review_date', calendarDateToDate(val));
 });
-watch(hrInterviewDateValue, (val) => {
-  form.setFieldValue('hr_interview_date', val);
+watch(hrInterviewDateValue, (val: any) => {
+  form.setFieldValue('hr_interview_date', calendarDateToDate(val));
 });
 watch(cvFile, (val) => (form.values.cv = val));
 
@@ -141,14 +112,26 @@ const onFileChange = (event: Event) => {
 };
 
 const onSubmit = form.handleSubmit((values) => {
-  emit('submit', values);
+  const modifiedValues: Record<string, any> = { ...values };
+  if (values.proposed_date instanceof Date && !isNaN(values.proposed_date.getTime())) {
+    modifiedValues.proposed_date = formatStandardDateFromDate(values.proposed_date);
+  }
+  if (values.cv_review_date instanceof Date && !isNaN(values.cv_review_date.getTime())) {
+    modifiedValues.cv_review_date = formatStandardDateFromDate(values.cv_review_date);
+  }
+  if (values.hr_interview_date instanceof Date && !isNaN(values.hr_interview_date.getTime())) {
+    modifiedValues.hr_interview_date = formatStandardDateFromDate(values.hr_interview_date);
+  }
+
+  if (values.cv === null) {
+    delete modifiedValues.cv;
+  }
+  emit('submit', modifiedValues);
 });
 </script>
 
 <template>
   <form @submit.prevent="onSubmit" class="space-y-6">
-    {{ form.values }}
-
     <!-- Name -->
     <FormField name="name" v-slot="{ componentField }">
       <FormItem>
@@ -233,7 +216,7 @@ const onSubmit = form.handleSubmit((values) => {
     </FormField>
 
     <!-- Dates and CV upload (similar to your create form) -->
-    <FormField name="proposed_date" v-slot="{ }">
+    <FormField name="proposed_date" v-slot="{}">
       <FormItem>
         <FormLabel>Proposed Date</FormLabel>
         <FormControl>
@@ -244,10 +227,7 @@ const onSubmit = form.handleSubmit((values) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar
-                :modelValue="proposedDateValue"
-                @update:modelValue="proposedDateValue = $event"
-              />
+              <Calendar :modelValue="proposedDateValue as any" @update:modelValue="proposedDateValue = $event" />
             </PopoverContent>
           </Popover>
         </FormControl>
@@ -256,7 +236,7 @@ const onSubmit = form.handleSubmit((values) => {
     </FormField>
 
     <!-- CV Review Date -->
-    <FormField name="cv_review_date" v-slot="{ componentField }">
+    <FormField name="cv_review_date" v-slot="{}">
       <FormItem>
         <FormLabel>CV Review Date</FormLabel>
         <FormControl>
@@ -267,7 +247,7 @@ const onSubmit = form.handleSubmit((values) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar v-bind="componentField" v-model="cvReviewDateValue" />
+              <Calendar v-model="cvReviewDateValue as any" @update:modelValue="cvReviewDateValue = $event" />
             </PopoverContent>
           </Popover>
         </FormControl>
@@ -276,7 +256,7 @@ const onSubmit = form.handleSubmit((values) => {
     </FormField>
 
     <!-- HR Interview Date -->
-    <FormField name="hr_interview_date" v-slot="{ componentField }">
+    <FormField name="hr_interview_date" v-slot="{}">
       <FormItem>
         <FormLabel>HR Interview Date</FormLabel>
         <FormControl>
@@ -287,13 +267,18 @@ const onSubmit = form.handleSubmit((values) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
-              <Calendar v-bind="componentField" v-model="hrInterviewDateValue" />
+              <Calendar v-model="hrInterviewDateValue as any" @update:modelValue="hrInterviewDateValue = $event" />
             </PopoverContent>
           </Popover>
         </FormControl>
         <FormMessage />
       </FormItem>
     </FormField>
+
+    <div v-if="props.candidate.cv_path" class="flex flex-col gap-2">
+      <label>Current CV:</label>
+      <a :href="props.candidate.cv_url" target="_blank" type="button">⬇️ Download current CV ⬇️</a>
+    </div>
 
     <!-- CV Upload -->
     <FormField name="cv" v-slot="{ componentField }">

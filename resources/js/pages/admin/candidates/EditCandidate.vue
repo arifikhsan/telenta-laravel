@@ -4,10 +4,10 @@ import { CandidateEntity } from '@/types/entity/candidate-entity';
 import { ManagerEntity } from '@/types/entity/manager-entity';
 import { PositionEntity } from '@/types/entity/position-entity';
 import { Head } from '@inertiajs/vue3';
-import { getLocalTimeZone } from '@internationalized/date';
 import axios from 'axios';
 import { toast } from 'vue-sonner';
 import CandidateForm from './CandidateForm.vue';
+// import Tes from './Tes.vue';
 
 const props = defineProps({
   candidate: {
@@ -25,19 +25,22 @@ const props = defineProps({
 });
 
 const onSubmit = async (values: any) => {
+  console.log('values 1: ', values);
   const formData = new FormData();
   for (const key in values) {
-    if (values[key] instanceof File) {
-      formData.append(key, values[key]);
-    } else if (values[key]?.toDate) {
-      formData.append(key, values[key].toDate(getLocalTimeZone()).toISOString());
-    } else {
-      formData.append(key, values[key]);
-    }
+    // if (values[key] instanceof File) {
+    //   formData.append(key, values[key]);
+    // } else
+    //     if (values[key]?.toDate) {
+    //       formData.append(key, formatStandardDateFromDate(values[key]));
+    //     } else {
+    formData.append(key, values[key]);
+    //     }
   }
 
   try {
-    await axios.post(`/dashboard/candidates/${props.candidate.id}`, formData, {
+    console.log('values 2: ', values);
+    await axios.post(`/dashboard/candidates/${props.candidate.id}/update`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     toast.success('Candidate updated successfully!');
@@ -48,6 +51,8 @@ const onSubmit = async (values: any) => {
     toast.error('Error updating candidate', { description: err.toString() });
   }
 };
+
+console.log('props.candidate', props.candidate);
 </script>
 
 <template>
@@ -55,7 +60,7 @@ const onSubmit = async (values: any) => {
   <AppLayout>
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
       <div class="max-w-sm">
-        <CandidateForm :model-value="candidate" :managers="managers" :positions="positions" @submit="onSubmit" />
+        <CandidateForm :candidate="props.candidate" :managers="props.managers" :positions="props.positions" @submit="onSubmit" />
       </div>
     </div>
   </AppLayout>

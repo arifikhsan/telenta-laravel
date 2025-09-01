@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/managers', [ManagerController::class, 'index'])->name('dashboard.managers');
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
     Route::get('dashboard/candidates/{id}/edit', [CandidateController::class, 'edit'])->name('dashboard.candidates.edit');
+    Route::post('dashboard/candidates/{id}/update', [CandidateController::class, 'update'])->name('dashboard.candidates.update');
+
     Route::get('dashboard/manager-candidate-requests', [ManagerCandidateRequestController::class, 'index'])->name('dashboard.manager-candidate-requests');
     Route::get('dashboard/candidates/create', [CandidateController::class, 'create'])->name('dashboard.candidates.create');
     Route::post('dashboard/candidates/store', [CandidateController::class, 'store'])->name('dashboard.candidates.store');
