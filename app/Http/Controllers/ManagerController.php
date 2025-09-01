@@ -10,7 +10,7 @@ class ManagerController extends Controller
 {
     public function index(): Response
     {
-        $managers = User::with('client')->
+        $managers = User::with(['client', 'department'])->
         whereHas('role', function($query) {
             $query->where('name', 'manager');
         })->get();

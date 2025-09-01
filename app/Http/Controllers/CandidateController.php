@@ -30,7 +30,7 @@ class CandidateController extends Controller
                 return $candidate;
             });
 
-        return Inertia::render('Candidates', ['candidates' => $candidates]);
+        return Inertia::render('admin/candidates/Candidates', ['candidates' => $candidates]);
     }
 
     /**
@@ -44,7 +44,7 @@ class CandidateController extends Controller
 
         $positions = Position::all();
 
-        return Inertia::render('admin/CreateCandidate', [
+        return Inertia::render('admin/candidates/CreateCandidate', [
             'managers' => $managers,  // Pass the managers to the view
             'positions' => $positions,
         ]);
@@ -120,7 +120,16 @@ class CandidateController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $candidate = Candidate::findOrFail($id);
+        $managers = User::whereHas('role', function ($query) {
+            $query->where('name', 'manager');  // Make sure the role is 'manager'
+        })->get();
+
+        return Inertia::render('admin/candidates/EditCandidate', [
+            'candidate' => $candidate,
+            'managers' => $managers,
+            'positions' => Position::all(),
+        ]);
     }
 
     /**
@@ -128,7 +137,27 @@ class CandidateController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $candidate = Candidate::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|min:2|max:50',
+            'manager_id' => 'required|exists:managers,id',
+            'position_id' => 'required|exists:positions,id',
+            'status' => 'required|string',
+            'days_required' => 'nullable|integer|min:1',
+            'proposed_date' => 'nullable|date',
+            'cv_review_date' => 'nullable|date',
+            'hr_interview_date' => 'nullable|date',
+            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
+        ]);
+
+        if ($request->hasFile('cv')) {
+            $validated['cv_url'] = $request->file('cv')->store('cvs', 'public');
+        }
+
+        $candidate->update($validated);
+
+        return redirect()->route('dashboard.candidates.index')->with('message', 'Candidate updated successfully!');
     }
 
     /**

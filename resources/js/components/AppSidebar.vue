@@ -16,6 +16,11 @@ const adminNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Candidate Request',
+        href: '/dashboard/manager-candidate-requests',
+        icon: LayoutGrid,
+    },
+    {
         title: 'Candidates',
         href: '/dashboard/candidates',
         icon: LayoutGrid,
@@ -33,6 +38,11 @@ const adminNavItems: NavItem[] = [
     {
         title: 'Role',
         href: '/dashboard/roles',
+        icon: LayoutGrid,
+    },
+    {
+        title: 'Department',
+        href: '/dashboard/departments',
         icon: LayoutGrid,
     },
     {

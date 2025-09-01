@@ -2,21 +2,15 @@
 import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
-import { ManagerEntity } from '@/types/entity/manager-entity';
+import { type BreadcrumbItem } from '@/types';
+import { DepartmentEntity } from '@/types/entity/department-entity';
 import { Head } from '@inertiajs/vue3';
 import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';
 
-defineProps({
-  managers: {
-    type: Array as () => ManagerEntity[],
-    required: true,
-  },
-});
+const columnHelper = createColumnHelper<DepartmentEntity>();
 
-const columnHelper = createColumnHelper<ManagerEntity>();
-
-const columns: ColumnDef<ManagerEntity, any>[] = [
+const columns: ColumnDef<DepartmentEntity, any>[] = [
   columnHelper.accessor('id', {
     header: 'Id',
     cell: ({ row }) => h('div', row.getValue('id')),
@@ -24,20 +18,6 @@ const columns: ColumnDef<ManagerEntity, any>[] = [
   columnHelper.accessor('name', {
     header: 'Name',
     cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('name')),
-  }),
-  columnHelper.accessor((row) => row.client.name, {
-    id: 'client.name',
-    header: 'Client',
-    cell: ({ row }) => {
-      return h('div', { class: 'capitalize' }, row.getValue('client.name'));
-    },
-  }),
-  columnHelper.accessor((row) => row.department.name, {
-    id: 'department.name',
-    header: 'Department',
-    cell: ({ row }) => {
-      return h('div', { class: 'capitalize' }, row.getValue('department.name'));
-    },
   }),
   columnHelper.accessor('created_at', {
     header: 'Created At',
@@ -48,14 +28,27 @@ const columns: ColumnDef<ManagerEntity, any>[] = [
     cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
   }),
 ];
+
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    title: 'Department',
+    href: '/departments',
+  },
+];
+
+
+const props = defineProps<{
+  departments: DepartmentEntity[];
+}>();
+
 </script>
 
 <template>
-  <Head title="Managers" />
+  <Head title="Departments" />
 
-  <AppLayout>
+  <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-      <DataTable title="Managers" description="User managers with client" :columns="columns" :data="managers" />
+      <DataTable title="Department" description="All departments" :columns="columns" :data="props.departments" />
     </div>
   </AppLayout>
 </template>
