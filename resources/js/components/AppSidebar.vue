@@ -36,6 +36,11 @@ const adminNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        title: 'Department',
+        href: '/dashboard/departments',
+        icon: LayoutGrid,
+    },
+    {
         title: 'Client',
         href: '/dashboard/clients',
         icon: LayoutGrid,

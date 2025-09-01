@@ -15,4 +15,9 @@ export interface ManagerEntity extends UserEntity {
         id: number;
         name: string;
     };
+
+    department: {
+        id: number;
+        name: string;
+    };
 }

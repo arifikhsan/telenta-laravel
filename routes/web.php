@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ManagerCandidateController;
 use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ManagerDashboardController;
@@ -25,6 +26,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('dashboard/roles', [RoleController::class, 'index'])->name('dashboard.roles');
+    Route::get('dashboard/departments', [DepartmentController::class, 'index'])->name('dashboard.departments');
     Route::get('dashboard/clients', [ClientController::class, 'index'])->name('dashboard.clients');
     Route::get('dashboard/managers', [ManagerController::class, 'index'])->name('dashboard.managers');
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
