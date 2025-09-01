@@ -91,6 +91,31 @@ const columns: ColumnDef<CandidateEntity, any>[] = [
     header: 'Updated At',
     cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
   }),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    enablePinning: true, // allow pinning
+    cell: ({ row }) => {
+      return h('div', { class: 'flex gap-2' }, [
+        h(
+          Link,
+          {
+            href: route('dashboard.candidates.edit', row.original.id),
+            class: 'text-blue-600 hover:underline',
+          },
+          'Edit',
+        ),
+        h(
+          'button',
+          {
+            class: 'text-red-600 hover:underline',
+            onClick: () => console.log('Delete', row.original.id),
+          },
+          'Delete',
+        ),
+      ]);
+    },
+  }),
 ];
 </script>
 

@@ -1,7 +1,15 @@
 <script setup lang="ts" generic="TData, TValue">
 import { valueUpdater } from '@/lib/utils';
 import type { ColumnDef, ColumnFiltersState, SortingState, VisibilityState } from '@tanstack/vue-table';
-import { FlexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table';
+import {
+  ColumnPinningState,
+  FlexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from '@tanstack/vue-table';
 import { ChevronDown } from 'lucide-vue-next';
 import { ref } from 'vue';
 
@@ -21,12 +29,19 @@ const props = defineProps<{
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
+// const columnPinning = ref<ColumnPinningState>({});
+const hasActionsColumn = props.columns.some((col) => col.id === 'actions' && col.enablePinning);
+const columnPinning = ref<ColumnPinningState>({
+  left: ['id'], // keep id pinned left
+  right: hasActionsColumn ? ['actions'] : [],
+});
 const rowSelection = ref({});
 const globalFilter = ref('');
 
 const table = useVueTable({
   data: props.data,
   columns: props.columns,
+  enableColumnPinning: true,
   getCoreRowModel: getCoreRowModel(),
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
@@ -36,6 +51,7 @@ const table = useVueTable({
   onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
   onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
   onGlobalFilterChange: (updaterOrValue) => valueUpdater(updaterOrValue, globalFilter),
+  onColumnPinningChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnPinning),
   state: {
     get sorting() {
       return sorting.value;
@@ -51,6 +67,9 @@ const table = useVueTable({
     },
     get globalFilter() {
       return globalFilter.value;
+    },
+    get columnPinning() {
+      return columnPinning.value;
     },
   },
 });
@@ -96,7 +115,19 @@ const table = useVueTable({
           <Table>
             <TableHeader>
               <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-                <TableHead v-for="header in headerGroup.headers" :key="header.id" class="[&:has([role=checkbox])]:pl-3">
+                <TableHead
+                  v-for="header in headerGroup.headers"
+                  :key="header.id"
+                  class="[&:has([role=checkbox])]:pl-3"
+                  :class="[header.column.getIsPinned() ? 'sticky z-10 bg-white' : '']"
+                  :style="
+                    header.column.getIsPinned()
+                      ? {
+                          [header.column.getIsPinned() as 'left' | 'right']: `${header.column.getPinnedIndex() * 150}px`,
+                        }
+                      : {}
+                  "
+                >
                   <FlexRender v-if="!header.isPlaceholder" :render="header.column.columnDef.header" :props="header.getContext()" />
                 </TableHead>
               </TableRow>
@@ -104,7 +135,21 @@ const table = useVueTable({
             <TableBody>
               <template v-if="table.getRowModel().rows?.length">
                 <TableRow v-for="row in table.getRowModel().rows" :key="row.id" :data-state="row.getIsSelected() && 'selected'">
-                  <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id" class="[&:has([role=checkbox])]:pl-3">
+                  <TableCell
+                    v-for="cell in row.getVisibleCells()"
+                    :key="cell.id"
+                    class="[&:has([role=checkbox])]:pl-3"
+                    :class="cell.column.getIsPinned() ? 'sticky z-10 bg-white' : ''"
+                    :style="
+                      (() => {
+                        const pos = cell.column.getIsPinned();
+                        if (!pos) return {};
+                        return {
+                          [pos]: `${cell.column.getPinnedIndex() * 150}px`, // adjust 150px to your column width
+                        };
+                      })()
+                    "
+                  >
                     <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                   </TableCell>
                 </TableRow>

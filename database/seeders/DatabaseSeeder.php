@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             CandidateSeeder::class,
             QuestionSeeder::class,
             QuestionPositionMapSeeder::class,
+            ManagerCandidateRequestSeeder::class,
         ]);
     }
 }
