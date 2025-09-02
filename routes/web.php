@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManagerCandidateRequestController;
+use App\Http\Controllers\ManagerManagerCandidateRequestController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -51,6 +52,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('manager/dashboard', [ManagerDashboardController::class, 'index'])->name('manager.dashboard');
     Route::get('manager/dashboard/candidates', [ManagerCandidateController::class, 'index'])->name('manager.dashboard.candidates');
+    Route::get('manager/dashboard/manager-candidate-requests', [ManagerManagerCandidateRequestController::class, 'index'])->name('manager.dashboard.manager-candidate-requests');
+    Route::get('manager/dashboard/manager-candidate-requests/create', [ManagerManagerCandidateRequestController::class, 'create'])->name('manager.dashboard.manager-candidate-requests.create');
 
 });
 
