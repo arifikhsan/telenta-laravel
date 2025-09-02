@@ -28,18 +28,10 @@ const onSubmit = async (values: any) => {
   console.log('values 1: ', values);
   const formData = new FormData();
   for (const key in values) {
-    // if (values[key] instanceof File) {
-    //   formData.append(key, values[key]);
-    // } else
-    //     if (values[key]?.toDate) {
-    //       formData.append(key, formatStandardDateFromDate(values[key]));
-    //     } else {
     formData.append(key, values[key]);
-    //     }
   }
 
   try {
-    console.log('values 2: ', values);
     await axios.post(`/dashboard/candidates/${props.candidate.id}/update`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
@@ -51,8 +43,6 @@ const onSubmit = async (values: any) => {
     toast.error('Error updating candidate', { description: err.toString() });
   }
 };
-
-console.log('props.candidate', props.candidate);
 </script>
 
 <template>

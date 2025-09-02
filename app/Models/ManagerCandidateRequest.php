@@ -19,7 +19,7 @@ class ManagerCandidateRequest extends Model
         return $this->belongsTo(User::class, 'manager_id');
     }
 
-    public function candidateRequests()
+    public function candidateRequestFills()
     {
         return $this->hasMany(CandidateRequestFill::class);
     }

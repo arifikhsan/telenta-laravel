@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
 import { type BreadcrumbItem } from '@/types';
 import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity.d copy';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';
 
@@ -47,13 +47,22 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
     header: 'Date Requested',
     cell: ({ row }) => h('div', formatStandardDate(row.getValue('date_requested'))),
   }),
-  columnHelper.accessor('created_at', {
-    header: 'Created At',
-    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
-  }),
-  columnHelper.accessor('updated_at', {
-    header: 'Updated At',
-    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  columnHelper.display({
+    id: 'actions',
+    header: 'Actions',
+    enablePinning: true, // allow pinning
+    cell: ({ row }) => {
+      return h('div', { class: 'flex gap-2' }, [
+        h(
+          Link,
+          {
+            href: route('dashboard.manager-candidate-requests.fulfill', row.original.id),
+            class: 'text-blue-600 hover:underline',
+          },
+          'Process',
+        ),
+      ]);
+    },
   }),
 ];
 

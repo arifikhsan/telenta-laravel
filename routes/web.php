@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\CandidateRequestFillController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ManagerCandidateController;
@@ -35,6 +36,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/candidates/{id}/update', [CandidateController::class, 'update'])->name('dashboard.candidates.update');
 
     Route::get('dashboard/manager-candidate-requests', [ManagerCandidateRequestController::class, 'index'])->name('dashboard.manager-candidate-requests');
+    Route::get('dashboard/manager-candidate-requests/{id}/fulfill', [ManagerCandidateRequestController::class, 'fulfill'])->name('dashboard.manager-candidate-requests.fulfill');
+    Route::post('dashboard/manager-candidate-requests/{id}/accept', [ManagerCandidateRequestController::class, 'accept'])->name('dashboard.manager-candidate-requests.accept');
+    Route::post('dashboard/manager-candidate-requests/{id}/reject', [ManagerCandidateRequestController::class, 'reject'])->name('dashboard.manager-candidate-requests.reject');
+    Route::post('dashboard/candidate-request-fills/add-candidate', [CandidateRequestFillController::class, 'addCandidate'])->name('dashboard.candidate-request-fills.add-candidate');
+    Route::post('dashboard/candidate-request-fills/remove-candidate', [CandidateRequestFillController::class, 'removeCandidate'])->name('dashboard.candidate-request-fills.remove-candidate');
+
     Route::get('dashboard/candidates/create', [CandidateController::class, 'create'])->name('dashboard.candidates.create');
     Route::post('dashboard/candidates/store', [CandidateController::class, 'store'])->name('dashboard.candidates.store');
 

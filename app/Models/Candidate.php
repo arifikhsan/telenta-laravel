@@ -38,4 +38,8 @@ class Candidate extends Model
             ? Storage::url($this->cv_path)
             : null;
     }
+
+    public function candidateRequestFill() {
+        return $this->hasOne(CandidateRequestFill::class);
+    }
 }
