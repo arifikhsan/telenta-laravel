@@ -5,6 +5,7 @@ import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessa
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { statusOptions } from '@/lib/candidate-util';
 import { formatStandardDateFromDate } from '@/lib/date-util';
 import { cn } from '@/lib/utils';
 import { CandidateEntity } from '@/types/entity/candidate-entity';
@@ -44,6 +45,8 @@ const formSchema = toTypedSchema(
     proposed_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid proposed date' }).optional(),
     cv_review_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid cv review date' }).optional(),
     hr_interview_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid hr review date' }).optional(),
+    internal_interview_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid internal interview date' }).optional(),
+    user_interview_date: z.custom<Date>((value) => value instanceof Date, { message: 'Invalid user interview date' }).optional(),
     cv: z
       .instanceof(File) // Ensure it's a file
       .refine((file) => !file || file.size <= 10 * 1024 * 1024, 'CV file should be less than 10MB')
@@ -59,13 +62,9 @@ function dateToCalendarDate(d: Date | undefined): DateValue | undefined {
 }
 
 function calendarDateToDate(v: DateValue | undefined): Date | undefined {
-  console.log('v: ', v);
   if (!v) return undefined;
   return v.toDate('UTC'); // or getLocalTimeZone() if you want local
 }
-console.log('candidate: ', props.candidate);
-console.log('proposed_date: ', props.candidate.proposed_date);
-console.log('cv: ', props.candidate.cv_path);
 
 const form = useForm({
   validationSchema: formSchema,
@@ -78,6 +77,8 @@ const form = useForm({
     proposed_date: !isEmpty(props.candidate) ? new Date(props.candidate.proposed_date) : undefined,
     cv_review_date: !isEmpty(props.candidate) ? new Date(props.candidate.cv_review_date) : undefined,
     hr_interview_date: !isEmpty(props.candidate) ? new Date(props.candidate.hr_interview_date) : undefined,
+    internal_interview_date: !isEmpty(props.candidate) ? new Date(props.candidate.internal_interview_date) : undefined,
+    user_interview_date: !isEmpty(props.candidate) ? new Date(props.candidate.user_interview_date) : undefined,
     cv: null,
   },
 });
@@ -85,6 +86,8 @@ const form = useForm({
 const proposedDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.proposed_date));
 const cvReviewDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.cv_review_date));
 const hrInterviewDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.hr_interview_date));
+const internalInterviewDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.internal_interview_date));
+const userInterviewDateValue = ref<DateValue | undefined>(dateToCalendarDate(form.values.user_interview_date));
 const cvFile = ref<File | null>(null);
 
 watch(proposedDateValue, (val: any) => {
@@ -96,15 +99,15 @@ watch(cvReviewDateValue, (val: any) => {
 watch(hrInterviewDateValue, (val: any) => {
   form.setFieldValue('hr_interview_date', calendarDateToDate(val));
 });
+watch(internalInterviewDateValue, (val: any) => {
+  form.setFieldValue('internal_interview_date', calendarDateToDate(val));
+});
+watch(userInterviewDateValue, (val: any) => {
+  form.setFieldValue('user_interview_date', calendarDateToDate(val));
+});
 watch(cvFile, (val) => (form.values.cv = val));
 
 const df = new DateFormatter('en-US', { dateStyle: 'long' });
-
-const statusOptions = [
-  { value: 'cv_reviewed', label: 'CV Reviewed' },
-  { value: 'hr_interviewed', label: 'HR Interviewed' },
-  { value: 'hired', label: 'Hired' },
-];
 
 const onFileChange = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -121,6 +124,12 @@ const onSubmit = form.handleSubmit((values) => {
   }
   if (values.hr_interview_date instanceof Date && !isNaN(values.hr_interview_date.getTime())) {
     modifiedValues.hr_interview_date = formatStandardDateFromDate(values.hr_interview_date);
+  }
+  if (values.internal_interview_date instanceof Date && !isNaN(values.internal_interview_date.getTime())) {
+    modifiedValues.internal_interview_date = formatStandardDateFromDate(values.internal_interview_date);
+  }
+  if (values.user_interview_date instanceof Date && !isNaN(values.user_interview_date.getTime())) {
+    modifiedValues.user_interview_date = formatStandardDateFromDate(values.user_interview_date);
   }
 
   if (values.cv === null) {
@@ -268,6 +277,44 @@ const onSubmit = form.handleSubmit((values) => {
             </PopoverTrigger>
             <PopoverContent class="w-auto p-0">
               <Calendar v-model="hrInterviewDateValue as any" @update:modelValue="hrInterviewDateValue = $event" />
+            </PopoverContent>
+          </Popover>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField name="internal_interview_date" v-slot="{}">
+      <FormItem>
+        <FormLabel>Internal Interview Date</FormLabel>
+        <FormControl>
+          <Popover>
+            <PopoverTrigger as-child>
+              <Button variant="outline" :class="cn('w-full justify-start text-left font-normal', !internalInterviewDateValue && 'text-muted-foreground')">
+                {{ internalInterviewDateValue ? df.format(internalInterviewDateValue.toDate(getLocalTimeZone())) : 'Pick a date' }}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar v-model="internalInterviewDateValue as any" @update:modelValue="internalInterviewDateValue = $event" />
+            </PopoverContent>
+          </Popover>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    </FormField>
+
+    <FormField name="user_interview_date" v-slot="{}">
+      <FormItem>
+        <FormLabel>User Interview Date</FormLabel>
+        <FormControl>
+          <Popover>
+            <PopoverTrigger as-child>
+              <Button variant="outline" :class="cn('w-full justify-start text-left font-normal', !userInterviewDateValue && 'text-muted-foreground')">
+                {{ userInterviewDateValue ? df.format(userInterviewDateValue.toDate(getLocalTimeZone())) : 'Pick a date' }}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-auto p-0">
+              <Calendar v-model="userInterviewDateValue as any" @update:modelValue="userInterviewDateValue = $event" />
             </PopoverContent>
           </Popover>
         </FormControl>

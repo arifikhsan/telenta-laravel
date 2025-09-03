@@ -90,13 +90,13 @@ const columns: ColumnDef<CandidateEntity, any>[] = [
     header: 'HR Interview Date',
     cell: ({ row }) => h('div', formatStandardDate(row.getValue('hr_interview_date'))),
   }),
-  columnHelper.accessor('created_at', {
-    header: 'Created At',
-    cell: ({ row }) => h('div', formatStandardDate(row.getValue('created_at'))),
+  columnHelper.accessor('internal_interview_date', {
+    header: 'Internal Interview Date',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('internal_interview_date'))),
   }),
-  columnHelper.accessor('updated_at', {
-    header: 'Updated At',
-    cell: ({ row }) => h('div', formatStandardDate(row.getValue('updated_at'))),
+  columnHelper.accessor('user_interview_date', {
+    header: 'User Interview Date',
+    cell: ({ row }) => h('div', formatStandardDate(row.getValue('user_interview_date'))),
   }),
   columnHelper.display({
     id: 'actions',

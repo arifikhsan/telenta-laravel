@@ -16,6 +16,7 @@ import axios from 'axios';
 import { Calendar as CalendarIcon } from 'lucide-vue-next';
 import { PropType, ref } from 'vue';
 import { toast } from 'vue-sonner';
+import { statusOptions } from '@/lib/candidate-util';
 
 const formSchema = toTypedSchema(
   z.object({
@@ -63,6 +64,32 @@ const formSchema = toTypedSchema(
         },
       )
       .optional(),
+    internal_interview_date: z
+      .custom<DateValue>(
+        (value) => {
+          if (value instanceof Date) {
+            return true; // Can be a Date object
+          }
+          return value && value.toDate instanceof Function; // Or if it's a DateValue object
+        },
+        {
+          message: 'Invalid internal interview date',
+        },
+      )
+      .optional(),
+    user_interview_date: z
+      .custom<DateValue>(
+        (value) => {
+          if (value instanceof Date) {
+            return true; // Can be a Date object
+          }
+          return value && value.toDate instanceof Function; // Or if it's a DateValue object
+        },
+        {
+          message: 'Invalid user interview date',
+        },
+      )
+      .optional(),
     cv: z
       .instanceof(File) // Ensure it's a file
       .refine((file) => !file || file.size <= 10 * 1024 * 1024, 'CV file should be less than 10MB')
@@ -102,6 +129,18 @@ const onSubmit = form.handleSubmit(async (values) => {
   if (values.hr_interview_date) {
     formData.append('hr_interview_date', values.hr_interview_date?.toDate(getLocalTimeZone())?.toISOString() || '');
   }
+  if (values.internal_interview_date) {
+    formData.append(
+      'internal_interview_date',
+      values.internal_interview_date?.toDate(getLocalTimeZone())?.toISOString() || '',
+    );
+  }
+  if (values.user_interview_date) {
+    formData.append(
+      'user_interview_date',
+      values.user_interview_date?.toDate(getLocalTimeZone())?.toISOString() || '',
+    );
+  }
 
   if (values.cv) {
     formData.append('cv', values.cv);
@@ -136,12 +175,6 @@ const props = defineProps({
   },
 });
 
-const statusOptions = [
-  { value: 'cv_reviewed', label: 'CV Reviewed' },
-  { value: 'hr_interviewed', label: 'HR Interviewed' },
-  { value: 'hired', label: 'Hired' },
-];
-
 const df = new DateFormatter('en-US', {
   dateStyle: 'long',
 });
@@ -149,6 +182,8 @@ const df = new DateFormatter('en-US', {
 const proposedDateValue = ref<DateValue>();
 const cvReviewDateValue = ref<DateValue>();
 const hrInterviewDateValue = ref<DateValue>();
+const internalInterviewDateValue = ref<DateValue>();
+const userInterviewDateValue = ref<DateValue>();
 const cvFile = ref<File | null>(null);
 
 const onFileChange = (event: Event) => {
@@ -304,6 +339,50 @@ const onFileChange = (event: Event) => {
                   </PopoverTrigger>
                   <PopoverContent class="w-auto p-0">
                     <Calendar v-bind="componentField" v-model="hrInterviewDateValue" initial-focus />
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="internal_interview_date">
+            <FormItem>
+              <FormLabel>Internal Interview Date</FormLabel>
+              <FormControl>
+                <Popover>
+                  <PopoverTrigger as-child>
+                    <Button
+                      variant="outline"
+                      :class="cn('w-full justify-start text-left font-normal', !internalInterviewDateValue && 'text-muted-foreground')"
+                    >
+                      <CalendarIcon class="mr-2 h-4 w-4" />
+                      {{ internalInterviewDateValue ? df.format(internalInterviewDateValue.toDate(getLocalTimeZone())) : 'Pick a date' }}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-auto p-0">
+                    <Calendar v-bind="componentField" v-model="internalInterviewDateValue" initial-focus />
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="user_interview_date">
+            <FormItem>
+              <FormLabel>User Interview Date</FormLabel>
+              <FormControl>
+                <Popover>
+                  <PopoverTrigger as-child>
+                    <Button
+                      variant="outline"
+                      :class="cn('w-full justify-start text-left font-normal', !userInterviewDateValue && 'text-muted-foreground')"
+                    >
+                      <CalendarIcon class="mr-2 h-4 w-4" />
+                      {{ userInterviewDateValue ? df.format(userInterviewDateValue.toDate(getLocalTimeZone())) : 'Pick a date' }}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-auto p-0">
+                    <Calendar v-bind="componentField" v-model="userInterviewDateValue" initial-focus />
                   </PopoverContent>
                 </Popover>
               </FormControl>
