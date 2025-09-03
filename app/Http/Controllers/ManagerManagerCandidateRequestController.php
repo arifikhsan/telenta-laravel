@@ -41,4 +41,13 @@ class ManagerManagerCandidateRequestController extends Controller
         return redirect()->route('manager.dashboard.manager-candidate-requests')
             ->with('success', 'Manager Candidate Request created successfully.');
     }
+
+    public function markAsCancelled(string $id)
+    {
+        $request = ManagerCandidateRequest::findOrFail($id);
+        $request->update(['status' => 'cancelled']);
+
+        return redirect()->route('manager.dashboard.manager-candidate-requests')
+            ->with('success', 'Manager Candidate Request marked as cancelled.');
+    }
 }

@@ -54,7 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('manager/dashboard/candidates', [ManagerCandidateController::class, 'index'])->name('manager.dashboard.candidates');
     Route::get('manager/dashboard/manager-candidate-requests', [ManagerManagerCandidateRequestController::class, 'index'])->name('manager.dashboard.manager-candidate-requests');
     Route::get('manager/dashboard/manager-candidate-requests/create', [ManagerManagerCandidateRequestController::class, 'create'])->name('manager.dashboard.manager-candidate-requests.create');
-
+    Route::post('manager/dashboard/manager-candidate-requests/store', [ManagerManagerCandidateRequestController::class, 'store'])->name('manager.dashboard.manager-candidate-requests.store');
+    Route::post('manager/dashboard/manager-candidate-requests/{id}/mark-as-cancelled', [ManagerManagerCandidateRequestController::class, 'markAsCancelled'])->name('manager.dashboard.manager-candidate-requests.mark-as-cancelled');
 });
 
 require __DIR__.'/settings.php';

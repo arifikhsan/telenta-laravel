@@ -70,6 +70,8 @@ class CandidateSeeder extends Seeder
                 'proposed_date' => now()->toDateString(),
                 'cv_review_date' => now()->toDateString(),
                 'hr_interview_date' => now()->toDateString(),
+                'internal_interview_date' => now()->toDateString(),
+                'user_interview_date' => now()->toDateString(),
                 'cv_path' => $filePath,
             ]
         );

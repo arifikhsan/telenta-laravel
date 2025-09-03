@@ -6,9 +6,10 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
 import { type BreadcrumbItem } from '@/types';
 import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity.d copy';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';
+import { toast } from 'vue-sonner';
 
 const columnHelper = createColumnHelper<ManagerCandidateRequestEntity>();
 
@@ -43,18 +44,44 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
     enablePinning: true, // allow pinning
     cell: ({ row }) => {
       return h('div', { class: 'flex gap-2' }, [
-        h(
-          Link,
+        // how to make this link only show if status == pending
+        row.original.status === 'pending' && h(
+          'button',
           {
-            href: route('dashboard.manager-candidate-requests.fulfill', row.original.id),
-            class: 'text-blue-600 hover:underline',
+            onclick: () => markAsCancelled(row.original.id),
+            class: 'text-red-600 hover:underline',
           },
           'Batalkan',
+        ),
+        row.original.status === 'accepted' && h(
+          Link,
+          {
+            href: route('manager.dashboard.manager-candidate-requests', row.original.id),
+            class: 'text-green-600 hover:underline',
+          },
+          'Lihat Kandidat',
         ),
       ]);
     },
   }),
 ];
+
+const markAsCancelled = (id: number) => {
+  router.post(route('manager.dashboard.manager-candidate-requests.mark-as-cancelled', id), {}, {
+    onSuccess: () => {
+      // Handle success
+      toast.success('Manager Candidate Request marked as cancelled');
+
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    },
+    onError: () => {
+      // Handle error
+      toast.error('Failed to mark Manager Candidate Request as cancelled');
+    },
+  });
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
   {

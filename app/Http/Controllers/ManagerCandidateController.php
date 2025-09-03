@@ -27,7 +27,7 @@ class ManagerCandidateController extends Controller
                 return $candidate;
             });
 
-        return Inertia::render('ManagerCandidates', ['candidates' => $candidates]);
+        return Inertia::render('manager/candidates/Candidates', ['candidates' => $candidates]);
     }
 
     /**

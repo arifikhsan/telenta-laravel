@@ -32,14 +32,10 @@ const form = useForm({
 const onSubmit = form.handleSubmit((values) => {
   console.log(values);
 
-  router.post(route('manager.dashboard.manager-candidate-requests.create'), values, {
+  router.post(route('manager.dashboard.manager-candidate-requests.store'), values, {
     onSuccess: () => {
       // Handle success
       toast.success('Manager Candidate Request created successfully');
-
-      setTimeout(() => {
-        window.location.href = '/manager/dashboard';
-      }, 2000);
     },
     onError: () => {
       // Handle error
@@ -53,10 +49,11 @@ const onSubmit = form.handleSubmit((values) => {
   <AppLayout>
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
       <div class="max-w-sm">
-        <form @submit="onSubmit" class="space-y-6">
+        <h1 class="scroll-m-20 text-2xl font-semibold tracking-tight">Create Manager Candidate Request</h1>
+        <form @submit="onSubmit" class="mt-8 space-y-6">
           <FormField v-slot="{ componentField }" name="requested_count">
             <FormItem>
-              <FormLabel>Requested Count</FormLabel>
+              <FormLabel>Candidate Count</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="1" v-bind="componentField" />
               </FormControl>

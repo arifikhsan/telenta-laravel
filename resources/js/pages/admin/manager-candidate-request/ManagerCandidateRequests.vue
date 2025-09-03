@@ -53,13 +53,21 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
     enablePinning: true, // allow pinning
     cell: ({ row }) => {
       return h('div', { class: 'flex gap-2' }, [
-        h(
+        row.original.status == 'pending' && h(
           Link,
           {
             href: route('dashboard.manager-candidate-requests.fulfill', row.original.id),
             class: 'text-blue-600 hover:underline',
           },
           'Process',
+        ),
+        row.original.status == 'accepted' && h(
+          Link,
+          {
+            href: route('dashboard.manager-candidate-requests.fulfill', row.original.id),
+            class: 'text-blue-600 hover:underline',
+          },
+          'Lihat',
         ),
       ]);
     },
