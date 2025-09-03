@@ -64,6 +64,8 @@ class CandidateController extends Controller
             'days_required' => 'nullable|integer|min:1',
             'cv_review_date' => 'nullable|date',
             'hr_interview_date' => 'nullable|date',
+            'internal_interview_date' => 'nullable|date',
+            'user_interview_date' => 'nullable|date',
             'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // 10MB max
         ]);
 
@@ -83,7 +85,8 @@ class CandidateController extends Controller
         $proposedDate = isset($validated['proposed_date']) ? Carbon::parse($validated['proposed_date'])->toDateString() : null;
         $cvReviewDate = isset($validated['cv_review_date']) ? Carbon::parse($validated['cv_review_date'])->toDateString() : null;
         $hrInterviewDate = isset($validated['hr_interview_date']) ? Carbon::parse($validated['hr_interview_date'])->toDateString() : null;
-
+        $internalInterviewDate = isset($validated['internal_interview_date']) ? Carbon::parse($validated['internal_interview_date'])->toDateString() : null;
+        $userInterviewDate = isset($validated['user_interview_date']) ? Carbon::parse($validated['user_interview_date'])->toDateString() : null;
 
         // Prepare the candidate data, with null defaults for optional fields
         $candidate = [
@@ -95,6 +98,8 @@ class CandidateController extends Controller
             'proposed_date' => $proposedDate,
             'cv_review_date' => $cvReviewDate,
             'hr_interview_date' => $hrInterviewDate,
+            'internal_interview_date' => $internalInterviewDate,
+            'user_interview_date' => $userInterviewDate,
             'cv_path' => $cvPath, // If no CV, this will be null
         ];
 
@@ -148,6 +153,8 @@ class CandidateController extends Controller
             'proposed_date' => 'nullable|date',
             'cv_review_date' => 'nullable|date',
             'hr_interview_date' => 'nullable|date',
+            'internal_interview_date' => 'nullable|date',
+            'user_interview_date' => 'nullable|date',
             'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240',
         ]);
 
