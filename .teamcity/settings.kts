@@ -45,7 +45,11 @@ object Deploy : BuildType({
             id = "deploy"
             scriptContent = """
                 whoami
+                docker info
+                pwd
+
                 cd /home/udin/fun/telenta-laravel
+                pwd
                 git pull
                 ./vendor/bin/sail
             """.trimIndent()
