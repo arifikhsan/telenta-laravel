@@ -43,7 +43,19 @@ object Deploy : BuildType({
         script {
             name = "deploy"
             id = "deploy"
-            scriptContent = "pwd"
+            scriptContent = """
+                whoami
+                cd /home/udin/fun/telenta-laravel
+                git pull
+                ./vendor/bin/sail npm install --no-save
+                ./vendor/bin/sail npm run build
+                ./vendor/bin/sail php artisan migrate --force
+                ./vendor/bin/sail php artisan db:seed --force
+                ./vendor/bin/sail php artisan config:clear
+                ./vendor/bin/sail php artisan cache:clear
+                ./vendor/bin/sail php artisan route:clear
+                docker restart telenta-web
+            """.trimIndent()
         }
     }
 
