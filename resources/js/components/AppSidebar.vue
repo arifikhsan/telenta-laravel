@@ -68,6 +68,11 @@ const managerNavItems: NavItem[] = [
         href: '/manager/dashboard/candidates',
         icon: LayoutGrid,
     },
+    {
+        title: 'Candidate Requests',
+        href: '/manager/dashboard/manager-candidate-requests',
+        icon: LayoutGrid,
+    },
 ]
 
 const footerNavItems: NavItem[] = [

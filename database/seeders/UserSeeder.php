@@ -42,5 +42,15 @@ class UserSeeder extends Seeder
                 'role_id' => $managerRole->id,  // Assign the 'manager' role
             ]
         );
+
+        User::firstOrCreate(
+            ['email' => 'manager2@telenta.com'],
+            [
+                'name' => 'Bambang',
+                'email' => 'manager2@telenta.com',
+                'password' => Hash::make('12345678'),
+                'role_id' => $managerRole->id,  // Assign the 'manager' role
+            ]
+        );
     }
 }

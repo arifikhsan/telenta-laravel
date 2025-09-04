@@ -22,5 +22,15 @@ class ManagerSeeder extends Seeder
         $department = Department::where(['name' => 'Information Technology'])->first();
         $manager->department()->associate($department);
         $manager->save();
+
+        $financeManager = User::where(['name' => 'Bambang'])->first();
+        $financeDepartment = Department::where(['name' => 'Finance'])->first();
+        $komdigiClient = Client::where(['name' => 'Komdigi'])->first();
+
+        $financeManager->client()->associate($komdigiClient);
+        $financeManager->save();
+
+        $financeManager->department()->associate($financeDepartment);
+        $financeManager->save();
     }
 }

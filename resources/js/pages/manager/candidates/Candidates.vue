@@ -112,14 +112,6 @@ const columns: ColumnDef<CandidateEntity, any>[] = [
           },
           'Edit',
         ),
-        h(
-          'button',
-          {
-            class: 'text-red-600 hover:underline',
-            onClick: () => console.log('Delete', row.original.id),
-          },
-          'Delete',
-        ),
       ]);
     },
   }),

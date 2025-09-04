@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import Badge from '@/components/ui/badge/Badge.vue';
+import Button from '@/components/ui/button/Button.vue';
 import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
 import { type BreadcrumbItem } from '@/types';
 import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity.d copy';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';
+import { toast } from 'vue-sonner';
 
 const columnHelper = createColumnHelper<ManagerCandidateRequestEntity>();
 
@@ -16,23 +18,12 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
     header: 'Id',
     cell: ({ row }) => h('div', row.getValue('id')),
   }),
-  columnHelper.accessor((row) => row.manager.name, {
-    id: 'manager.name',
-    header: 'Manager',
-    cell: ({ row }) => {
-      return h('div', { class: 'capitalize' }, row.getValue('manager.name'));
-    },
-  }),
   columnHelper.accessor('status', {
     header: 'Status',
     cell: ({ row }) => {
       const status = row.getValue('status');
 
-      return h(
-        Badge,
-        { class: 'capitalize' },
-        { default: () => status },
-      );
+      return h(Badge, { class: 'capitalize' }, { default: () => status });
     },
   }),
   columnHelper.accessor('requested_count', {
@@ -53,26 +44,44 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
     enablePinning: true, // allow pinning
     cell: ({ row }) => {
       return h('div', { class: 'flex gap-2' }, [
-        row.original.status == 'pending' && h(
-          Link,
+        // how to make this link only show if status == pending
+        row.original.status === 'pending' && h(
+          'button',
           {
-            href: route('dashboard.manager-candidate-requests.fulfill', row.original.id),
-            class: 'text-blue-600 hover:underline',
+            onclick: () => markAsCancelled(row.original.id),
+            class: 'text-red-600 hover:underline',
           },
-          'Process',
+          'Batalkan',
         ),
-        row.original.status == 'accepted' && h(
+        row.original.status === 'accepted' && h(
           Link,
           {
-            href: route('dashboard.manager-candidate-requests.fulfill', row.original.id),
-            class: 'text-blue-600 hover:underline',
+            href: route('manager.dashboard.manager-candidate-requests', row.original.id),
+            class: 'text-green-600 hover:underline',
           },
-          'Lihat',
+          'Lihat Kandidat',
         ),
       ]);
     },
   }),
 ];
+
+const markAsCancelled = (id: number) => {
+  router.post(route('manager.dashboard.manager-candidate-requests.mark-as-cancelled', id), {}, {
+    onSuccess: () => {
+      // Handle success
+      toast.success('Manager Candidate Request marked as cancelled');
+
+      setTimeout(() => {
+        location.reload();
+      }, 2000);
+    },
+    onError: () => {
+      // Handle error
+      toast.error('Failed to mark Manager Candidate Request as cancelled');
+    },
+  });
+}
 
 const breadcrumbs: BreadcrumbItem[] = [
   {
@@ -91,6 +100,11 @@ const props = defineProps<{
 
   <AppLayout :breadcrumbs="breadcrumbs">
     <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+      <div class="flex justify-end">
+        <Link :href="route('manager.dashboard.manager-candidate-requests.create')">
+          <Button variant="default">Tambah Permintaan Kandidat Baru</Button>
+        </Link>
+      </div>
       <DataTable
         title="Manager Candidate Request"
         description="Manager Candidate Request"

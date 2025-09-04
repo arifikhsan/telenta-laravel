@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\CandidateRequestFillController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ManagerCandidateController;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManagerCandidateRequestController;
+use App\Http\Controllers\ManagerManagerCandidateRequestController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -32,7 +34,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard/managers', [ManagerController::class, 'index'])->name('dashboard.managers');
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
     Route::get('dashboard/candidates/{id}/edit', [CandidateController::class, 'edit'])->name('dashboard.candidates.edit');
+    Route::post('dashboard/candidates/{id}/update', [CandidateController::class, 'update'])->name('dashboard.candidates.update');
+
     Route::get('dashboard/manager-candidate-requests', [ManagerCandidateRequestController::class, 'index'])->name('dashboard.manager-candidate-requests');
+    Route::get('dashboard/manager-candidate-requests/{id}/fulfill', [ManagerCandidateRequestController::class, 'fulfill'])->name('dashboard.manager-candidate-requests.fulfill');
+    Route::post('dashboard/manager-candidate-requests/{id}/accept', [ManagerCandidateRequestController::class, 'accept'])->name('dashboard.manager-candidate-requests.accept');
+    Route::post('dashboard/manager-candidate-requests/{id}/reject', [ManagerCandidateRequestController::class, 'reject'])->name('dashboard.manager-candidate-requests.reject');
+    Route::post('dashboard/candidate-request-fills/add-candidate', [CandidateRequestFillController::class, 'addCandidate'])->name('dashboard.candidate-request-fills.add-candidate');
+    Route::post('dashboard/candidate-request-fills/remove-candidate', [CandidateRequestFillController::class, 'removeCandidate'])->name('dashboard.candidate-request-fills.remove-candidate');
+
     Route::get('dashboard/candidates/create', [CandidateController::class, 'create'])->name('dashboard.candidates.create');
     Route::post('dashboard/candidates/store', [CandidateController::class, 'store'])->name('dashboard.candidates.store');
 
@@ -42,7 +52,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('manager/dashboard', [ManagerDashboardController::class, 'index'])->name('manager.dashboard');
     Route::get('manager/dashboard/candidates', [ManagerCandidateController::class, 'index'])->name('manager.dashboard.candidates');
-
+    Route::get('manager/dashboard/manager-candidate-requests', [ManagerManagerCandidateRequestController::class, 'index'])->name('manager.dashboard.manager-candidate-requests');
+    Route::get('manager/dashboard/manager-candidate-requests/create', [ManagerManagerCandidateRequestController::class, 'create'])->name('manager.dashboard.manager-candidate-requests.create');
+    Route::post('manager/dashboard/manager-candidate-requests/store', [ManagerManagerCandidateRequestController::class, 'store'])->name('manager.dashboard.manager-candidate-requests.store');
+    Route::post('manager/dashboard/manager-candidate-requests/{id}/mark-as-cancelled', [ManagerManagerCandidateRequestController::class, 'markAsCancelled'])->name('manager.dashboard.manager-candidate-requests.mark-as-cancelled');
 });
 
 require __DIR__.'/settings.php';

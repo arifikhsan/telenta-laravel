@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class Candidate extends Model
 {
@@ -27,5 +28,18 @@ class Candidate extends Model
     public function manager(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected $appends = ['cv_url'];
+
+    public function getCvUrlAttribute()
+    {
+        return $this->cv_path
+            ? Storage::url($this->cv_path)
+            : null;
+    }
+
+    public function candidateRequestFill() {
+        return $this->hasOne(CandidateRequestFill::class);
     }
 }
