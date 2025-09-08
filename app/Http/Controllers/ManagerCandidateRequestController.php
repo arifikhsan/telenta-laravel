@@ -14,7 +14,7 @@ class ManagerCandidateRequestController extends Controller
 {
     public function index(): Response
     {
-        $managerCandidateRequests = ManagerCandidateRequest::with(['manager'])->get();
+        $managerCandidateRequests = ManagerCandidateRequest::with(['manager', 'position'])->get();
 
         return Inertia::render('admin/manager-candidate-request/ManagerCandidateRequests', ['managerCandidateRequests' => $managerCandidateRequests]);
     }

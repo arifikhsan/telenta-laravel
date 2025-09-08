@@ -5,7 +5,7 @@ import DataTable from '@/components/ui/table/DataTable.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { formatStandardDate } from '@/lib/date-util';
 import { type BreadcrumbItem } from '@/types';
-import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity.d copy';
+import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ColumnDef, createColumnHelper } from '@tanstack/vue-table';
 import { h } from 'vue';

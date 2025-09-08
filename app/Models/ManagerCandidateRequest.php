@@ -8,7 +8,10 @@ class ManagerCandidateRequest extends Model
 {
     protected $fillable = [
         'manager_id',
+        'position_id',
         'status',
+        'level',
+        'note',
         'requested_count',
         'fulfilled_count',
         'date_requested',
@@ -17,6 +20,11 @@ class ManagerCandidateRequest extends Model
     public function manager()
     {
         return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class, 'position_id');
     }
 
     public function candidateRequestFills()

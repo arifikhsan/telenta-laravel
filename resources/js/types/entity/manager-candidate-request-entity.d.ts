@@ -4,7 +4,13 @@ export interface ManagerCandidateRequestEntity {
         id: number;
         name: string;
     }
+    position: {
+        id: number;
+        name: string;
+    }
     status: string;
+    level: string;
+    note: string;
     requested_count: number;
     fulfilled_count: number;
     date_requested: string;

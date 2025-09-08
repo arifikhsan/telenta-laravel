@@ -11,7 +11,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { getStatusLabel } from '@/lib/candidate-util';
 import { formatStandardDate } from '@/lib/date-util';
 import { CandidateEntity } from '@/types/entity/candidate-entity';
-import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity.d copy';
+import { ManagerCandidateRequestEntity } from '@/types/entity/manager-candidate-request-entity';
 import { Head, router } from '@inertiajs/vue3';
 import { defineProps } from 'vue';
 import { toast } from 'vue-sonner';

@@ -18,6 +18,9 @@ class ManagerCandidateRequestSeeder extends Seeder
             'status' => 'pending',
             'requested_count' => 5,
             'fulfilled_count' => 0,
+            'position_id' => 1,
+            'note' => 'mau yang good looking',
+            'level' => 'junior',
             'date_requested' => now(),
         ]);
     }

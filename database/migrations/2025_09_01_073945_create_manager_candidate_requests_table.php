@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('manager_candidate_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('manager_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('position_id')->constrained('positions')->onDelete('cascade');
             $table->string('status');
+            $table->string('level');
             $table->integer('requested_count');
             $table->integer('fulfilled_count');
+            $table->string('note');
             $table->date('date_requested');
             $table->timestamps();
         });
