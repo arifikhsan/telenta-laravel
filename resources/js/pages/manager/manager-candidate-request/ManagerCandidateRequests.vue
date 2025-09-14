@@ -26,6 +26,17 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
       return h(Badge, { class: 'capitalize' }, { default: () => status });
     },
   }),
+  columnHelper.accessor((row) => row.position.name, {
+    id: 'position.name',
+    header: 'Position',
+    cell: ({ row }) => {
+      return h('div', { class: 'capitalize' }, row.getValue('position.name'));
+    },
+  }),
+  columnHelper.accessor('hiring_type', {
+    header: 'Hiring Type',
+    cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('hiring_type')),
+  }),
   columnHelper.accessor('requested_count', {
     header: 'Requested Count',
     cell: ({ row }) => h('div', { class: 'capitalize' }, row.getValue('requested_count')),
@@ -37,6 +48,10 @@ const columns: ColumnDef<ManagerCandidateRequestEntity, any>[] = [
   columnHelper.accessor('date_requested', {
     header: 'Date Requested',
     cell: ({ row }) => h('div', formatStandardDate(row.getValue('date_requested'))),
+  }),
+  columnHelper.accessor('note', {
+    header: 'Note',
+    cell: ({ row }) => h('div', row.getValue('note')),
   }),
   columnHelper.display({
     id: 'actions',

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->foreignId('position_id')->constrained('positions')->onDelete('cascade');
             $table->string('status');
             $table->string('level');
+            $table->string('hiring_type');
             $table->integer('requested_count');
             $table->integer('fulfilled_count');
-            $table->string('note');
+            $table->string('note')->nullable();
             $table->date('date_requested');
             $table->timestamps();
         });

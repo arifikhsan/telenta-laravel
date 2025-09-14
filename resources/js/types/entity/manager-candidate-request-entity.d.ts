@@ -11,6 +11,7 @@ export interface ManagerCandidateRequestEntity {
     status: string;
     level: string;
     note: string;
+    hiring_type: string;
     requested_count: number;
     fulfilled_count: number;
     date_requested: string;

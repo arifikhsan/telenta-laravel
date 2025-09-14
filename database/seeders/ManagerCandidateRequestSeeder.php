@@ -21,6 +21,7 @@ class ManagerCandidateRequestSeeder extends Seeder
             'position_id' => 1,
             'note' => 'mau yang good looking',
             'level' => 'junior',
+            'hiring_type' => 'new',
             'date_requested' => now(),
         ]);
     }

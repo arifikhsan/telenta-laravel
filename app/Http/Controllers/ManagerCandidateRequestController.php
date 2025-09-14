@@ -45,8 +45,6 @@ class ManagerCandidateRequestController extends Controller
             $query->where('manager_candidate_request_id', $managerCandidateRequest->id);
         })->get();
 
-        // dd($assignedCandidates);
-
         return Inertia::render('admin/manager-candidate-request/FulfillManagerCandidateRequest', [
             'managerCandidateRequest' => $managerCandidateRequest,
             'unassignedCandidates' => $unassignedCandidates,
