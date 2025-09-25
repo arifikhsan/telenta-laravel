@@ -10,25 +10,10 @@ class Candidate extends Model
 {
     protected $fillable = [
         'name',
-        'position_id',
-        'manager_id',
         'status',
-        'days_required',
-        'proposed_date',
-        'cv_review_date',
-        'hr_interview_date',
-        'cv_path',
+        'cv_path'
     ];
 
-    public function position(): BelongsTo
-    {
-        return $this->belongsTo(Position::class);
-    }
-
-    public function manager(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
 
     protected $appends = ['cv_url'];
 
@@ -37,6 +22,17 @@ class Candidate extends Model
         return $this->cv_path
             ? Storage::url($this->cv_path)
             : null;
+    }
+
+
+    public function positions()
+    {
+        return $this->belongsToMany(
+            Position::class,
+            'candidate_position_maps',
+            'candidate_id',
+            'position_id'
+        );
     }
 
     public function candidateRequestFill() {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ManagerCandidateRequest;
+use App\Models\CandidateRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -11,7 +11,7 @@ class ManagerManagerCandidateRequestController extends Controller
     public function index()
     {
         // Fetch manager candidate requests for the authenticated manager
-        $managerCandidateRequests = ManagerCandidateRequest::where('manager_id', auth()->id())->get();
+        $managerCandidateRequests = CandidateRequest::where('manager_id', auth()->id())->get();
 
         return Inertia::render('manager/manager-candidate-request/ManagerCandidateRequests', [
             'managerCandidateRequests' => $managerCandidateRequests,
@@ -30,7 +30,7 @@ class ManagerManagerCandidateRequestController extends Controller
             'date_requested' => 'required|date',
         ]);
 
-        ManagerCandidateRequest::create([
+        CandidateRequest::create([
             'manager_id' => auth()->id(),
             'status' => 'pending',
             'requested_count' => $validated['requested_count'],
@@ -44,7 +44,7 @@ class ManagerManagerCandidateRequestController extends Controller
 
     public function markAsCancelled(string $id)
     {
-        $request = ManagerCandidateRequest::findOrFail($id);
+        $request = CandidateRequest::findOrFail($id);
         $request->update(['status' => 'cancelled']);
 
         return redirect()->route('manager.dashboard.manager-candidate-requests')

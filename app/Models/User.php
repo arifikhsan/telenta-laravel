@@ -67,6 +67,13 @@ class User extends Authenticatable
 
     public function candidateRequests(): HasMany
     {
-        return $this->hasMany(ManagerCandidateRequest::class, 'manager_id');
+        return $this->hasMany(CandidateRequest::class, 'manager_id');
+    }
+
+    public static function getUserByEmail($email)
+    {
+        return self::select('id', 'email', 'password', 'role_id')
+        ->where('email', $email)
+        ->first();
     }
 }

@@ -14,15 +14,7 @@ return new class extends Migration
         Schema::create('candidates', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('position_id')->constrained()->onDelete('cascade');
-            $table->foreignId('manager_id')->constrained('users')->onDelete('cascade');
             $table->string('status');
-            $table->integer('days_required')->nullable();
-            $table->date('proposed_date')->nullable();
-            $table->date('cv_review_date')->nullable();
-            $table->date('hr_interview_date')->nullable();
-            $table->date('internal_interview_date')->nullable();
-            $table->date('user_interview_date')->nullable();
             $table->string('cv_path')->nullable();
             $table->timestamps();
         });

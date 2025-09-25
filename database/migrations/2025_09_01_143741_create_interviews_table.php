@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('interviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('candidate_request_fill_id')->constrained()->onDelete('cascade');
-            $table->timestamp('with_manager_start')->nullable();
-            $table->timestamp('with_manager_end')->nullable();
-            $table->timestamp('with_client_start')->nullable();
-            $table->timestamp('with_client_end')->nullable();
+            $table->string('type');
+            $table->tinyInteger('score');
+            $table->text('detail');
             $table->timestamps();
         });
     }

@@ -7,18 +7,29 @@ use Illuminate\Database\Eloquent\Model;
 class CandidateRequestFill extends Model
 {
     protected $fillable = [
-        'manager_candidate_request_id',
+        'candidate_request_id',
         'candidate_id',
         'date_filled',
+        'interview_manager',
+        'interview_client',
+        'interview_hr',
+        'sla',
+        'status',
     ];
 
-    public function managerCandidateRequest()
+    public function candidateRequest()
     {
-        return $this->belongsTo(ManagerCandidateRequest::class);
+        return $this->belongsTo(CandidateRequest::class);
     }
 
     public function candidate()
     {
         return $this->belongsTo(Candidate::class);
+    }
+
+
+    public function interview()
+    {
+        return $this->hasMany(Interview::class);
     }
 }

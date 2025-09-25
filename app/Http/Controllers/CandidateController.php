@@ -10,70 +10,74 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use App\Helpers\DataTableHelper;
+use App\Helpers\CommonHelper;
 
 class CandidateController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //     $candidates = Candidate::with(['position', 'manager'])
+    //         ->orderBy('id', 'desc') // Order by 'id' in descending order
+    //         ->get()
+    //         ->map(function ($candidate) {
+    //             // Generate the full URL for the CV, if it exists
+    //             $candidate->cv_url = $candidate->cv_path
+    //                 ? Storage::url($candidate->cv_path)
+    //                 : null; // If no CV exists, set null
+
+    //             return $candidate;
+    //         });
+
+    //     return Inertia::render('admin/candidates/Candidates', ['candidates' => $candidates]);
+    // }
+
     public function index()
     {
-        $candidates = Candidate::with(['position', 'manager'])
-            ->orderBy('id', 'desc') // Order by 'id' in descending order
-            ->get()
-            ->map(function ($candidate) {
-                // Generate the full URL for the CV, if it exists
-                $candidate->cv_url = $candidate->cv_path
-                    ? Storage::url($candidate->cv_path)
-                    : null; // If no CV exists, set null
-
-                return $candidate;
-            });
-
-        return Inertia::render('admin/candidates/Candidates', ['candidates' => $candidates]);
+        return view('candidates');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function fetch(Request $request)
     {
-        $managers = User::whereHas('role', function ($query) {
-            $query->where('name', 'manager');  // Make sure the role is 'manager'
-        })->get();
 
-        $positions = Position::all();
+        $query = Candidate::with(['candidateRequestFill.interview'])->get();
 
-        return Inertia::render('admin/candidates/CreateCandidate', [
-            'managers' => $managers,  // Pass the managers to the view
-            'positions' => $positions,
-        ]);
+        $formatters = [
+            fn($ls, $num) => $num,
+            fn($ls) => $ls->name,
+            fn($ls) => CommonHelper::mappingStatus($ls->status),
+            fn($ls) => '<a href="'.Storage::url($ls->cv_path).'" class="btn btn-secondary btn-sm">View CV</a>',
+            fn($ls) => $ls->positions->pluck('name')->implode(', '),
+            fn($ls) => CommonHelper::countLatestScore($ls),
+            fn($ls) => CommonHelper::setActionCandidate($ls->status, $ls->id),
+        ];
+
+        return response()->json(
+            DataTableHelper::fromCollectionWithFormatter($request, $query, $formatters)
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+
+        $code = 500;
+        $message = "Internal Server Error (EXP)";
+
         $validated = $request->validate([
             'name' => 'required|string|min:2|max:50',
-            'manager_id' => 'required|exists:users,id',
-            'position_id' => 'required|exists:positions,id',
-            'status' => 'required|string',
-            'proposed_date' => 'nullable|date',
-            'days_required' => 'nullable|integer|min:1',
-            'cv_review_date' => 'nullable|date',
-            'hr_interview_date' => 'nullable|date',
-            'internal_interview_date' => 'nullable|date',
-            'user_interview_date' => 'nullable|date',
-            'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // 10MB max
+            'file' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // 10MB max
+            'positions'     => 'required|array',
+            'positions.*'   => 'exists:positions,id'
         ]);
 
         $cvPath = null;
 
         // Handle CV upload if provided
-        if ($request->hasFile('cv')) {
-            $cvFile = $request->file('cv');
+        if ($request->hasFile('file')) {
+            $cvFile = $request->file('file');
             $cvFileName = Str::random(10) . '-' . $cvFile->getClientOriginalName();
             $cvPath = 'cv/' . $cvFileName;
 
@@ -81,44 +85,170 @@ class CandidateController extends Controller
             Storage::disk('public')->put($cvPath, file_get_contents($cvFile));
         }
 
-        // Convert dates to the correct format using Carbon
-        $proposedDate = isset($validated['proposed_date']) ? Carbon::parse($validated['proposed_date'])->toDateString() : null;
-        $cvReviewDate = isset($validated['cv_review_date']) ? Carbon::parse($validated['cv_review_date'])->toDateString() : null;
-        $hrInterviewDate = isset($validated['hr_interview_date']) ? Carbon::parse($validated['hr_interview_date'])->toDateString() : null;
-        $internalInterviewDate = isset($validated['internal_interview_date']) ? Carbon::parse($validated['internal_interview_date'])->toDateString() : null;
-        $userInterviewDate = isset($validated['user_interview_date']) ? Carbon::parse($validated['user_interview_date'])->toDateString() : null;
-
-        // Prepare the candidate data, with null defaults for optional fields
-        $candidate = [
+        $candidateData  = [
             'name' => $validated['name'],
-            'manager_id' => $validated['manager_id'],
-            'position_id' => $validated['position_id'],
-            'status' => $validated['status'],
-            'days_required' => $validated['days_required'] ?? null, // Set to null if not provided
-            'proposed_date' => $proposedDate,
-            'cv_review_date' => $cvReviewDate,
-            'hr_interview_date' => $hrInterviewDate,
-            'internal_interview_date' => $internalInterviewDate,
-            'user_interview_date' => $userInterviewDate,
-            'cv_path' => $cvPath, // If no CV, this will be null
+            'status' => 'idle',
+            'cv_path' => $cvPath, 
         ];
 
         // Insert the candidate data
-        $candidate = Candidate::create($candidate);
+        $candidate = Candidate::create($candidateData);
 
-        return response()->json([
-            'message' => 'Candidate created successfully!',
-            'candidate' => $candidate, // Optionally return the created candidate data
-        ]);
+        $candidate->positions()->attach($request->positions);
+
+        if ($candidate) {
+            $code = 200;
+            $message = "Insert Data Success";
+        } else {
+            $code = 502;
+            $message = "Invalid Insert Data";
+        }
+
+        $response = CommonHelper::setResponse($code, $message);
+        return response()->json($response, $code);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+
+    public function idle(Request $request)
     {
-        //
+
+        $code = 500;
+        $message = "Internal Server Error (EXP)";
+
+
+        $validated = $request->validate([
+            'id' => ['required']
+        ]);
+
+        $id = $validated['id'];
+
+        $rowData = Candidate::findOrFail($id);
+        $rowData->update(['status' => 'idle']);
+
+        if($rowData) {
+            $code = 200;
+            $message = "Success";
+        } else {
+            $code = 404;
+            $message = "Data Not Found";
+        }
+
+        $response = CommonHelper::setResponse($code, $message);
+        return response()->json($response, $code);
     }
+
+    public function show(Request $request)
+    {
+        $code = 500;
+        $message = "Internal Server Error (EXP)";
+
+
+        $validated = $request->validate([
+            'id' => ['required']
+        ]);
+
+        $id = $request->input('id');
+
+        $rowData = Candidate::with(['positions'])->findOrFail($id);
+
+        if($rowData) {
+            $code = 200;
+            $message = "Success";
+        } else {
+            $code = 404;
+            $message = "Data Not Found";
+        }
+
+        $response = CommonHelper::setResponseBody($code, $message, $rowData);
+        return response()->json($response, $code);
+    }
+
+    // /**
+    //  * Show the form for creating a new resource.
+    //  */
+    // public function create()
+    // {
+    //     $managers = User::whereHas('role', function ($query) {
+    //         $query->where('name', 'manager');  // Make sure the role is 'manager'
+    //     })->get();
+
+    //     $positions = Position::all();
+
+    //     return Inertia::render('admin/candidates/CreateCandidate', [
+    //         'managers' => $managers,  // Pass the managers to the view
+    //         'positions' => $positions,
+    //     ]);
+    // }
+
+    // /**
+    //  * Store a newly created resource in storage.
+    //  */
+    // public function store(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'required|string|min:2|max:50',
+    //         'manager_id' => 'required|exists:users,id',
+    //         'position_id' => 'required|exists:positions,id',
+    //         'status' => 'required|string',
+    //         'proposed_date' => 'nullable|date',
+    //         'days_required' => 'nullable|integer|min:1',
+    //         'cv_review_date' => 'nullable|date',
+    //         'hr_interview_date' => 'nullable|date',
+    //         'internal_interview_date' => 'nullable|date',
+    //         'user_interview_date' => 'nullable|date',
+    //         'cv' => 'nullable|file|mimes:pdf,doc,docx|max:10240', // 10MB max
+    //     ]);
+
+    //     $cvPath = null;
+
+    //     // Handle CV upload if provided
+    //     if ($request->hasFile('cv')) {
+    //         $cvFile = $request->file('cv');
+    //         $cvFileName = Str::random(10) . '-' . $cvFile->getClientOriginalName();
+    //         $cvPath = 'cv/' . $cvFileName;
+
+    //         // Store the file in storage/app/public/cv
+    //         Storage::disk('public')->put($cvPath, file_get_contents($cvFile));
+    //     }
+
+    //     // Convert dates to the correct format using Carbon
+    //     $proposedDate = isset($validated['proposed_date']) ? Carbon::parse($validated['proposed_date'])->toDateString() : null;
+    //     $cvReviewDate = isset($validated['cv_review_date']) ? Carbon::parse($validated['cv_review_date'])->toDateString() : null;
+    //     $hrInterviewDate = isset($validated['hr_interview_date']) ? Carbon::parse($validated['hr_interview_date'])->toDateString() : null;
+    //     $internalInterviewDate = isset($validated['internal_interview_date']) ? Carbon::parse($validated['internal_interview_date'])->toDateString() : null;
+    //     $userInterviewDate = isset($validated['user_interview_date']) ? Carbon::parse($validated['user_interview_date'])->toDateString() : null;
+
+    //     // Prepare the candidate data, with null defaults for optional fields
+    //     $candidate = [
+    //         'name' => $validated['name'],
+    //         'manager_id' => $validated['manager_id'],
+    //         'position_id' => $validated['position_id'],
+    //         'status' => $validated['status'],
+    //         'days_required' => $validated['days_required'] ?? null, // Set to null if not provided
+    //         'proposed_date' => $proposedDate,
+    //         'cv_review_date' => $cvReviewDate,
+    //         'hr_interview_date' => $hrInterviewDate,
+    //         'internal_interview_date' => $internalInterviewDate,
+    //         'user_interview_date' => $userInterviewDate,
+    //         'cv_path' => $cvPath, // If no CV, this will be null
+    //     ];
+
+    //     // Insert the candidate data
+    //     $candidate = Candidate::create($candidate);
+
+    //     return response()->json([
+    //         'message' => 'Candidate created successfully!',
+    //         'candidate' => $candidate, // Optionally return the created candidate data
+    //     ]);
+    // }
+
+    // /**
+    //  * Display the specified resource.
+    //  */
+    // public function show(string $id)
+    // {
+    //     //
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -181,8 +311,31 @@ class CandidateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request)
     {
-        //
+        $code = 500;
+        $message = "Internal Server Error (EXP)";
+
+        $validated = $request->validate([
+            'id' => ['required']
+        ]);
+
+        $id = $request->input('id');
+
+        $rowData = Candidate::findOrFail($id);
+
+        if($rowData) {
+            $code = 200;
+            $message = "Success";
+
+            $rowData->positions()->detach();
+            $rowData->delete();
+        } else {
+            $code = 404;
+            $message = "Data Not Found";
+        }
+
+        $response = CommonHelper::setResponseBody($code, $message, $rowData);
+        return response()->json($response, $code);
     }
 }

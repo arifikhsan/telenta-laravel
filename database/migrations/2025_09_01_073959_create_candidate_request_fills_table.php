@@ -13,9 +13,14 @@ return new class extends Migration
     {
         Schema::create('candidate_request_fills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('manager_candidate_request_id')->constrained('manager_candidate_requests')->onDelete('cascade');
+            $table->foreignId('candidate_request_id')->constrained('candidate_requests')->onDelete('cascade');
             $table->foreignId('candidate_id')->constrained('candidates')->onDelete('cascade');
             $table->date('date_filled');
+            $table->timestamp('interview_manager')->nullable();
+            $table->timestamp('interview_client')->nullable();
+            $table->timestamp('interview_hr')->nullable();
+            $table->string('sla')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }
