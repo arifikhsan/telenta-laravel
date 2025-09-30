@@ -165,4 +165,11 @@ class DepartmentController extends Controller
         $response = CommonHelper::setResponseBody($code, $message, $rowData);
         return response()->json($response, $code);
     }
+
+    public function list()
+    {
+        $list = Department::select('id', 'name')->orderBy('name')->get();
+
+        return response()->json($list);
+    }
 }

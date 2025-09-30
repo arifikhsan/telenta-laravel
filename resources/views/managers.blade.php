@@ -37,10 +37,13 @@
 							<tr>
 								<th>No</th>
 								<th>Name</th>
+								<th>Email</th>
 								<th>Client</th>
 								<th>Department</th>
 								<th>Created At</th>
 								<th>Updated At</th>
+								<th>Verified At</th>
+								<th>Actions</th>
 							</tr>
 						</thead>
 					</table>
@@ -62,30 +65,40 @@
 
 	$(document).ready(function() {
 
-				table = $('#table').DataTable({
-					"processing": true, 
-					"serverSide": true, 
-					"scrollX": true,
-					"order": [], 
+		table = $('#table').DataTable({
+			"processing": true, 
+			"serverSide": true, 
+			"scrollX": true,
+			"order": [], 
 
-					"ajax": {
-						"url": "{{ url('dashboard/managers/fetch') }}",
-						"type": "POST",
-						"headers": {
-							'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-						},
-						"data": function(data) {
-						}
-					},
+			"ajax": {
+				"url": "{{ url('dashboard/managers/fetch') }}",
+				"type": "POST",
+				"headers": {
+					'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+				},
+				"data": function(data) {
+				}
+			},
 
-					"columnDefs": [{
-						"targets": [-1], 
-						"orderable": false, 
-					}, ],
+			"columnDefs": [{
+				"targets": [-1], 
+				"orderable": false, 
+			}, ],
 
-				}); 
+		}); 
 
-			});
+	});
+
+	function approve(id) {
+
+		var data = JSON.stringify({ 
+			id : id
+		}); 
+
+		url = "{{ url('dashboard/managers/approve') }}";
+		httpPost(url, data);
+	}
 </script>
 
 

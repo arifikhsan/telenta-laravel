@@ -58,17 +58,26 @@ class AuthenticatedSessionController extends Controller
         /* get data user */
         $user = User::getUserByEmail($email);
 
+
         if ($user) {
-            if (Hash::check($password, $user->password) && Auth::attempt($validated)) {
-                $code = 200;
-                $message = "Login Success";
-                $request->session()->regenerate();
-                session(['role' => $user->role->name]);
-                
-            } else {
+
+            if ($user->role_id == 2 && $user->email_verified_at == null) {
                 $code = 401;
-                $message = "Invalid Password";
+                $message = "Account not Verified from HRD";
+            } else {
+                if (Hash::check($password, $user->password) && Auth::attempt($validated)) {
+                    $code = 200;
+                    $message = "Login Success";
+                    $request->session()->regenerate();
+                    session(['role' => $user->role->name]);
+                    
+                } else {
+                    $code = 401;
+                    $message = "Invalid Password";
+                }
             }
+
+            
         } else {
             $code = 404;
             $message = "Account Not Found";

@@ -130,7 +130,7 @@
 						}
 					});
 
-					httpRequestFireAndForget("{{url('post-set-data-themes') }}", 'POST', {
+					httpRequestFireAndForget("{{ url('post-set-data-themes') }}", 'POST', {
 						body: className
 					});
 				}

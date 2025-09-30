@@ -25,6 +25,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role_id',
+        'client_id',
+        'department_id',
+        'email_verified_at'
     ];
 
     /**
@@ -72,7 +76,7 @@ class User extends Authenticatable
 
     public static function getUserByEmail($email)
     {
-        return self::select('id', 'email', 'password', 'role_id')
+        return self::select('id', 'email', 'password', 'email_verified_at', 'role_id')
         ->where('email', $email)
         ->first();
     }

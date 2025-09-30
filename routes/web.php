@@ -21,6 +21,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ManagerCandidateRequestController;
 use App\Http\Controllers\ManagerManagerCandidateRequestController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -55,6 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/departments/show', [DepartmentController::class, 'show'])->name('dashboard.departments.show');
     Route::post('dashboard/departments/update', [DepartmentController::class, 'update'])->name('dashboard.departments.update');
     Route::post('dashboard/departments/destroy', [DepartmentController::class, 'destroy'])->name('dashboard.departments.destroy');
+    Route::get('dashboard/departments/list', [DepartmentController::class, 'list'])->name('dashboard.departments.list');
 
     Route::get('dashboard/candidates', [CandidateController::class, 'index'])->name('dashboard.candidates');
     Route::post('dashboard/candidates/fetch', [CandidateController::class, 'fetch'])->name('dashboard.candidates.fetch');
@@ -67,6 +69,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('dashboard/managers', [ManagerController::class, 'index'])->name('dashboard.managers');
     Route::post('dashboard/managers/fetch', [ManagerController::class, 'fetch'])->name('dashboard.managers.fetch');
+    Route::post('dashboard/managers/approve', [ManagerController::class, 'approve'])->name('dashboard.managers.approve');
+    Route::get('dashboard/managers/verify', [ManagerController::class, 'verify'])->name('dashboard.managers.verify');
+    Route::post('dashboard/managers/update', [ManagerController::class, 'update'])->name('dashboard.managers.update');
+    Route::get('dashboard/managers/show', [ManagerController::class, 'show'])->name('dashboard.managers.show');
 
     Route::get('dashboard/roles', [RoleController::class, 'index'])->name('dashboard.roles');
     Route::post('dashboard/roles/getData', [RoleController::class, 'getData'])->name('dashboard.roles.getData');
@@ -78,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('dashboard/clients/show', [ClientController::class, 'show'])->name('dashboard.clients.show');
     Route::post('dashboard/clients/update', [ClientController::class, 'update'])->name('dashboard.clients.update');
     Route::post('dashboard/clients/destroy', [ClientController::class, 'destroy'])->name('dashboard.clients.destroy');
+    Route::get('dashboard/clients/list', [ClientController::class, 'list'])->name('dashboard.clients.list');
 
     Route::get('dashboard/positions', [PositionController::class, 'index'])->name('dashboard.positions');
     Route::post('dashboard/positions/fetch', [PositionController::class, 'fetch'])->name('dashboard.positions.fetch');
@@ -129,6 +136,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     Route::post('dashboard/checkaccess', [AcmRoleMenuController::class, 'checkaccess'])->name('dashboard.checkaccess');
+
+    Route::post('account/update-password', [PasswordResetLinkController::class, 'update'])->name('password.update');
 });
 
 require __DIR__.'/settings.php';

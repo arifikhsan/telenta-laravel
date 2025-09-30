@@ -34,19 +34,19 @@
 				<div class="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
 					<div class="col mx-auto">
 						<div class="mb-4 text-center">
-							<!-- <img src="{{ asset('assets/images/new-logo-img.png') }}" width="180" alt="" /> -->
+							<img src="{{ asset('telenta.png') }}" width="220" alt="" />
 						</div>
 						<div class="card">
 							<div class="card-body">
 								<div class="border p-4 rounded">
 									<div class="text-center">
-										<h3 class="">Selamat Datang di Aplikasi Telenta</h3>
-										<p> Belum punya akun? <a href="#" class="text-primary">Daftar</a>
+										<h3 class="">Welcome to the Telenta App</h3>
+										<p> Don't have an account yet? <a href="{{ url('register') }}" class="text-primary">Sign Up</a>
 										</p>
 										<p id="login-box-msg"></p>
 									</div>
 
-									<div class="login-separater text-center mb-4"> <span>Masuk untuk melanjutkan</span>
+									<div class="login-separater text-center mb-4"> <span>Sign In to Continue</span>
 										<hr/>
 									</div>
 									<div class="form-body">
@@ -67,11 +67,11 @@
 
 												</div>
 											</div>
-											<div class="col-md-6 text-end">	<a href="reset-password">Lupa kata sandi?</a>
+											<div class="col-md-6 text-end">	<a href="{{ url('forgot-password') }}">Forgot password?</a>
 											</div>
 											<div class="col-12">
 												<div class="d-grid">
-													<button class="btn btn-primary" onclick="login()"><i class="bx bxs-lock-open"></i>Masuk</button>
+													<button class="btn btn-primary" onclick="login()"><i class="bx bxs-lock-open"></i>Sign In</button>
 												</div>
 											</div>
 										</div>
@@ -153,7 +153,6 @@
 					success: function(data, textStatus, jqXHR) {
 
 						if (jqXHR.status === 200) {
-							console.log("redirect to {{ url('dashboard') }}")
 							swal("Login berhasil!", "Klik OK untuk melanjutkan", "success")
 							.then(function() {
 								document.location = "{{ url('dashboard') }}";
@@ -166,6 +165,7 @@
 					error: function(jqXHR, textStatus, errorThrown) {
 						console.log("Error:", jqXHR.responseJSON);
 						console.log("HTTP Status:", jqXHR.status);
+						swal("Failed!", jqXHR.responseJSON.message, "error");
 
 						// $("#login-box-msg").text(jqXHR.responseJSON?.message || "System error");
 						// $("#login-box-msg").attr('class', 'login-box-msg text-danger');

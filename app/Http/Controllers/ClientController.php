@@ -67,7 +67,7 @@ class ClientController extends Controller
             'name' => $validated['name']
         ];
 
-        // Insert the candidate data
+
         $insert = Client::create($data);
 
         if ($insert) {
@@ -167,5 +167,12 @@ class ClientController extends Controller
 
         $response = CommonHelper::setResponseBody($code, $message, $rowData);
         return response()->json($response, $code);
+    }
+
+    public function list()
+    {
+        $list = Client::select('id', 'name')->orderBy('name')->get();
+
+        return response()->json($list);
     }
 }

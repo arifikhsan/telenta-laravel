@@ -242,8 +242,10 @@
 		$('#type').val(type);
 		$('#btn-save').prop('hidden', false);
 		$('#btn-loading').prop('hidden', true);
-		$('#form')[0].reset();
+		resetForm();
 		$('.modal-title').text(titleAdd);
+
+		$('#user_interview').val(null);
 
 		$('#modal-add').modal({backdrop: 'static', keyboard: false});
 		$('#modal-add').modal('show');
@@ -287,11 +289,17 @@
 		$('#form')[0].reset();
 		$('.modal-title').text(titleAdd);
 
+		const hrInterviewRow = document.getElementById("hr_it");
+		hrInterviewRow.style.display = "none";
+
 		const score = document.getElementById("scr");
 		score.style.display = "none";
 
 		const detail = document.getElementById("dtl");
 		detail.style.display = "none";
+
+		const result = document.getElementById("rslt");
+		result.style.display = "flex";
 
 		$('#score').val("0");
 		$('#detail').val("0");
@@ -355,8 +363,23 @@
 
 	function detail(id) {
 		let baseUrl = "{{ url('dashboard/interviews/detail') }}";
-        let fullUrl = baseUrl + "/" + id;
-        document.location = fullUrl;
+		let fullUrl = baseUrl + "/" + id;
+		document.location = fullUrl;
+	}
+
+	function resetForm() {
+		$('#form')[0].reset();
+
+		const userInterviewRow = document.getElementById("user_it");
+		userInterviewRow.style.display = "none";
+
+		$('#result').val('0').trigger('change');
+
+		$('#detail').val('');
+
+		$('#score').val('');
+		$('#user_interview').val('');
+		$('#hr_interview').val('');
 	}
 
 </script>
@@ -384,9 +407,9 @@
 					userInterviewRow.style.display = "none";
 				// } else if (type === "2"){
 				// 	hrInterviewRow.style.display = "none"; 
-				}				
-			}
-		});		
+			}				
+		}
+	});		
 	});
 </script>
 

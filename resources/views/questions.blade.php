@@ -76,7 +76,7 @@
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<select id="questions" name="questions" class="form-select mb-3"></select>
+										<textarea id="questions" name="questions" class="form-control mb-3"></textarea>
 									</div>
 								</div>        
 							</div>

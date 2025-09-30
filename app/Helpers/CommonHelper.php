@@ -271,4 +271,9 @@ class CommonHelper
 
         return $response;
     }
+
+    public static function debugging($var) {
+        var_dump(json_encode($var));
+        die;
+    }
 }
